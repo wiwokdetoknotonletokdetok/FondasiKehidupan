@@ -8,6 +8,6 @@ class FondasiKehidupanApplicationTests {
 
     @Test
     void contextLoads() {
+        FondasiKehidupanApplication.main(new String[]{});
     }
-
 }
