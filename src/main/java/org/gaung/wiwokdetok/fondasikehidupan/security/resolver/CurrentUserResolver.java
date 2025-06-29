@@ -17,6 +17,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Component
 public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 
@@ -57,7 +59,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
         }
 
-        String userId = jwtUtil.getId(payload);
+        UUID userId = jwtUtil.getId(payload);
         String role = jwtUtil.getRole(payload);
 
         return new UserPrincipal(userId, role);
