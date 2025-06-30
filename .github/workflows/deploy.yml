@@ -5,6 +5,8 @@ on:
     workflows: ["Unit Tests"]
     types:
       - completed
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -15,22 +17,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java & Docker
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
       - name: Build Docker image
         run: docker build -t fondasikehidupan:latest .
 
       - name: Save Docker image to file
         run: docker save fondasikehidupan:latest -o fondasikehidupan.tar
 
+      - name: Create .env file from secrets
+        run: |
+          cat <<EOF > .env
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          EOF
+
       - name: Prepare deploy files
         run: |
           mkdir fondasikehidupan
-          mv fondasikehidupan.tar fondasikehidupan/
+          mv fondasikehidupan.tar .env fondasikehidupan/
 
       - name: Copy Docker image to server via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -52,10 +59,12 @@ jobs:
 
             docker stop fondasikehidupan || true
             docker rm fondasikehidupan || true
+            docker rmi fondasikehidupan:latest || true
 
             docker load -i fondasikehidupan.tar
 
             docker run -d \
               --name fondasikehidupan \
-              -p 8080:8080 \
+              --env-file ~/fondasikehidupan/.env \
+              -p 8081:8080 \
               fondasikehidupan:latest
