@@ -11,7 +11,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -64,7 +66,7 @@ public class BookServiceImpl implements BookService {
         List<String> genres = new ArrayList<>();
         for (Long genreId : dto.getGenreIds()) {
             Genre genre = genreRepository.findById(genreId)
-                    .orElseThrow(() -> new RuntimeException("Genre not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Genre tidak ditemukan"));
             havingGenreRepository.save(new HavingGenre(book, genre));
             genres.add(genre.getGenre());
         }
@@ -89,7 +91,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponseDTO getBookById(Long idBook) {
         Book book = bookRepository.findById(idBook)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
         BookLocation location = bookLocationRepository.findByBookId(idBook).orElse(null);
 
