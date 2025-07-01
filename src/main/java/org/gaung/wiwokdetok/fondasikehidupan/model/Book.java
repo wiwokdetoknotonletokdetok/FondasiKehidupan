@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "book")
@@ -13,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Book {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,18 +22,29 @@ public class Book {
     @Column(length = 17, nullable = false, unique = true)
     private String isbn;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String description;
+    @Column(name = "synopsis", columnDefinition = "TEXT", nullable = false)
+    private String synopsis;
 
     @Column(length = 255, nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private Integer rating;
+    @Column(nullable = false, precision = 2, scale = 1)
+    private BigDecimal rating;
 
     @Column(name = "book_picture", length = 255, nullable = false)
     private String bookPicture;
 
-    @Column(name = "id_publisher", nullable = false)
-    private UUID idPublisher;
+    private Integer pages;
+
+    @Column(name = "published_year")
+    private Integer publishedYear;
+
+    private String language;
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "id_publisher", nullable = false)
+    private Publisher publisher;
 }

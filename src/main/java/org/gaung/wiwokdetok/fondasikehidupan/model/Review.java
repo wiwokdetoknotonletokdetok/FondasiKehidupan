@@ -3,6 +3,7 @@ package org.gaung.wiwokdetok.fondasikehidupan.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +26,12 @@ public class Review {
     @MapsId("idBook")
     @JoinColumn(name = "id_book")
     private Book book;
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 
     public Review(UUID userId, Book book, String message, int rating) {
         this.book = book;
