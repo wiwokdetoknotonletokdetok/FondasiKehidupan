@@ -103,7 +103,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void testCreateBookSuccess() throws Exception {
+    void testCreateBookSuccessWhenAuthorAndPublisherAreAvailable() throws Exception {
         Claims payload = mock(Claims.class);
         when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
@@ -114,11 +114,44 @@ public class BookControllerTest {
         bookRequest.setIsbn("978-0-306-40615-7");
         bookRequest.setSynopsis("Book Synopsis");
         bookRequest.setBookPicture("https://example.com");
-        // TODO: Ini jangan pake publiser name, pake ID, tau kan kenapa
         bookRequest.setPublisherName(publisher.getName());
-        bookRequest.setGenreIds(List.of(genre.getId()));
-        // TODO: Ini jangan pake nama author, pake ID, tau kan kenapa
         bookRequest.setAuthorNames(List.of(author.getName()));
+        bookRequest.setGenreIds(List.of(genre.getId()));
+
+        mockMvc.perform(
+                post("/books")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest))
+                        .header("Authorization", "Bearer valid.token.here")
+        ).andExpect(
+                status().isCreated()
+        ).andDo(result -> {
+            // TODO: Created seharusnya response string aja
+            // TODO: BookResponse seharusnya tampilkan informasi buku aja. Author, publisher, genre name boleh ditampilkan, tapi location gak perlu, book location bisa banyak
+            WebResponse<BookResponseDTO> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getData());
+            assertNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testCreateBookSuccessWhenAuthorAndPublisherAreNotAvailable() throws Exception {
+        Claims payload = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
+        when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
+        when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        BookRequestDTO bookRequest = new BookRequestDTO();
+        bookRequest.setTitle("Book Title");
+        bookRequest.setIsbn("978-0-306-40615-7");
+        bookRequest.setSynopsis("Book Synopsis");
+        bookRequest.setBookPicture("https://example.com");
+        bookRequest.setPublisherName("New publisher");
+        bookRequest.setAuthorNames(List.of("New author", "New author2"));
+        bookRequest.setGenreIds(List.of(genre.getId()));
 
         mockMvc.perform(
                 post("/books")
@@ -150,8 +183,8 @@ public class BookControllerTest {
         bookRequest.setSynopsis("Book Synopsis");
         bookRequest.setBookPicture("https://example.com");
         bookRequest.setPublisherName(publisher.getName());
-        bookRequest.setGenreIds(List.of(genre.getId()));
         bookRequest.setAuthorNames(List.of(author.getName()));
+        bookRequest.setGenreIds(List.of(genre.getId()));
 
         mockMvc.perform(
                 post("/books")
