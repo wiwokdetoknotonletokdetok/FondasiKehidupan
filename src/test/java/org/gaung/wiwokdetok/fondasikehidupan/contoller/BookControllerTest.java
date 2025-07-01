@@ -92,9 +92,7 @@ public class BookControllerTest {
 
     @AfterEach
     void tearDown() {
-        // TODO: Harus ubah AuthoredBy jadi casdade
         authoredByRepository.deleteAll();
-        // TODO: Harus ubah HavingGenre jadi casdade
         havingGenreRepository.deleteAll();
         bookRepository.deleteAll();
         authorRepository.deleteAll();
