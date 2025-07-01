@@ -3,7 +3,10 @@ package org.gaung.wiwokdetok.fondasikehidupan.controller;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
+import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
+import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,23 +22,39 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<WebResponse<ReviewResponseDTO>> submitReview(@RequestBody ReviewRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                WebResponse.<ReviewResponseDTO>builder().data(reviewService.submitReview(dto)).build()
-        );
+    @AllowedRoles({"USER"})
+    public ResponseEntity<WebResponse<ReviewResponseDTO>> submitReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
+        dto.setUserId(user.getId());
+        ReviewResponseDTO result = reviewService.submitReview(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(WebResponse.<ReviewResponseDTO>builder().data(result).build());
     }
 
     @PatchMapping
-    public ResponseEntity<ReviewResponseDTO> updateReview(@RequestBody ReviewRequestDTO dto) {
-        return ResponseEntity.ok(reviewService.updateReview(dto));
+    @AllowedRoles({"USER"})
+    public ResponseEntity<WebResponse<ReviewResponseDTO>> updateReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
+        dto.setUserId(user.getId());
+        ReviewResponseDTO result = reviewService.updateReview(dto);
+        return ResponseEntity.ok(WebResponse.<ReviewResponseDTO>builder().data(result).build());
     }
 
     @GetMapping("/book/{bookId}")
+    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<List<ReviewResponseDTO>>> getReviewsForBook(@PathVariable Long bookId) {
         return ResponseEntity.ok(
                 WebResponse.<List<ReviewResponseDTO>>builder()
                         .data(reviewService.getReviewsForBook(bookId))
                         .build()
         );
+    }
+
+    @DeleteMapping("/{bookId}")
+    @AllowedRoles({"USER"})
+    public ResponseEntity<WebResponse<String>> deleteReview(@CurrentUser UserPrincipal user, @PathVariable Long bookId) {
+        reviewService.deleteReview(user.getId(), bookId);
+        WebResponse<String> response = WebResponse.<String>builder()
+                .data("OK")
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }
