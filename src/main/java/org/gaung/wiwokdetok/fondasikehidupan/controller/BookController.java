@@ -1,10 +1,9 @@
 package org.gaung.wiwokdetok.fondasikehidupan.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.*;
+import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
+import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +19,11 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
+    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<BookResponseDTO>> createBook(@RequestBody BookRequestDTO dto) {
+
         BookResponseDTO created = bookService.createBook(dto);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(WebResponse.<BookResponseDTO>builder()
@@ -30,6 +32,7 @@ public class BookController {
     }
 
     @GetMapping
+    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getAllBooks() {
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
                 .data(bookService.getAllBooks())
@@ -37,6 +40,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
+    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> searchByTitle(@RequestParam("q") String keyword) {
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
                 .data(bookService.findByTitleContainingIgnoreCase(keyword))
@@ -44,6 +48,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
+    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(WebResponse.<BookResponseDTO>builder()
                 .data(bookService.getBookById(id))
@@ -51,13 +56,14 @@ public class BookController {
     }
 
     @GetMapping("/advanced-search")
+    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String isbn,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String genre,
-            @RequestParam(required = false) String publisher
-    ) {
+            @RequestParam(required = false) String publisher) {
+
         if ("".equals(title)) title = null;
         if ("".equals(isbn)) isbn = null;
         if ("".equals(author)) author = null;
@@ -69,3 +75,4 @@ public class BookController {
                 .build());
     }
 }
+
