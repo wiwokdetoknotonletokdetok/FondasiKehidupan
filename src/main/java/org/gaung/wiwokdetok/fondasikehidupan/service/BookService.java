@@ -3,7 +3,6 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 
 import java.util.List;
 

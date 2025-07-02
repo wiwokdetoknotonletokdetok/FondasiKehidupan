@@ -79,8 +79,7 @@ API ini memungkinkan user untuk mengelola dan melihat koleksi buku mereka sendir
       "rating": 4,
       "bookPicture": "https://link.gambar.com",
       "publisherName": "Penerbit Gaung"
-    },
-    ...
+    }
   ]
 }
 ```
