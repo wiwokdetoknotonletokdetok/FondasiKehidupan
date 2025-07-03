@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -14,7 +13,7 @@ public class BookRequestDTO {
     private String isbn;
     private String title;
     private String synopsis;
-    private BigDecimal rating;
+    private float rating;
     private String bookPicture;
 
     private Integer pages;
