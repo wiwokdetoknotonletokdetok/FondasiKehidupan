@@ -36,11 +36,9 @@ public class BookRequestDTO {
     @NotBlank(message = "Gambar buku tidak boleh kosong")
     private String bookPicture;
 
-    @NotNull
     @Min(1)
     private Integer pages;
 
-    @NotNull
     @Min(0)
     private Integer publishedYear;
 

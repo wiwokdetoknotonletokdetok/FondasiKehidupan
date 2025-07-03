@@ -23,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +39,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookResponseDTO createBook(BookRequestDTO dto) {
+    public void createBook(BookRequestDTO dto) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
@@ -63,23 +62,17 @@ public class BookServiceImpl implements BookService {
 
         book = bookRepository.save(book);
 
-        List<String> authors = new ArrayList<>();
         for (String authorName : dto.getAuthorNames()) {
             Author author = authorRepository.findByNameIgnoreCase(authorName.trim())
                     .orElseGet(() -> authorRepository.save(new Author(UUID.randomUUID(), authorName.trim())));
             authoredByRepository.save(new AuthoredBy(book, author));
-            authors.add(author.getName());
         }
 
-        List<String> genres = new ArrayList<>();
         for (Long genreId : dto.getGenreIds()) {
             Genre genre = genreRepository.findById(genreId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Genre tidak ditemukan"));
             havingGenreRepository.save(new HavingGenre(book, genre));
-            genres.add(genre.getGenre());
         }
-
-        return BookResponseDTO.from(book, authors, genres);
     }
 
     @Override
