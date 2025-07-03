@@ -23,22 +23,21 @@ public class ReviewController {
 
     @PostMapping
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<ReviewResponseDTO>> submitReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
-        dto.setUserId(user.getId());
-        ReviewResponseDTO result = reviewService.submitReview(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(WebResponse.<ReviewResponseDTO>builder().data(result).build());
+    public ResponseEntity<WebResponse<String>> submitReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
+        reviewService.submitReview(user.getId(), dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(WebResponse.<String>builder().data("OK").build());
     }
 
     @PatchMapping
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<ReviewResponseDTO>> updateReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
-        dto.setUserId(user.getId());
-        ReviewResponseDTO result = reviewService.updateReview(dto);
-        return ResponseEntity.ok(WebResponse.<ReviewResponseDTO>builder().data(result).build());
+    public ResponseEntity<WebResponse<String>> updateReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
+        reviewService.updateReview(user.getId(), dto);
+        return ResponseEntity.ok(WebResponse.<String>builder().data("OK").build());
     }
 
+
     @GetMapping("/book/{bookId}")
-    @AllowedRoles({"USER"})
     public ResponseEntity<WebResponse<List<ReviewResponseDTO>>> getReviewsForBook(@PathVariable Long bookId) {
         return ResponseEntity.ok(
                 WebResponse.<List<ReviewResponseDTO>>builder()

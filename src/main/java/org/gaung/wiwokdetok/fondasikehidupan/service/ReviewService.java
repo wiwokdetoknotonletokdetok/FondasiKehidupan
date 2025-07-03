@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ReviewService {
-    ReviewResponseDTO submitReview(ReviewRequestDTO dto);
-    ReviewResponseDTO updateReview(ReviewRequestDTO dto);
+    void submitReview(UUID userId, ReviewRequestDTO dto);
+    void updateReview(UUID userId, ReviewRequestDTO dto);
     List<ReviewResponseDTO> getReviewsForBook(Long bookId);
     void deleteReview(UUID userId, Long bookId);
 }

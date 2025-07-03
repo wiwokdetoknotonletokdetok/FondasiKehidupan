@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
-    private UUID userId;
     private Long bookId;
 
     @NotBlank(message = "Pesan review tidak boleh kosong")
