@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
