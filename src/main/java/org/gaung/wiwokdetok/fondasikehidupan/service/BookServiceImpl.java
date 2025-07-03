@@ -95,21 +95,15 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
         List<String> authorNames = authorRepository.findAllNamesByBookId(idBook);
-        System.out.println("Author   : " + authorNames);
 
         List<String> genreNames = genreRepository.findAllNamesByBookId(idBook);
-        System.out.println("Genre    : " + genreNames);
 
         return BookResponseDTO.from(book, authorNames, genreNames);
     }
 
     @Override
     public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
-        List<Book> b = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
-        for (Book book : b) {
-            System.out.println("Book ID: " + book.getId() + ", Title: " + book.getTitle());
-        }
-        return b
+        return bookRepository.advancedSearch(title, isbn, author, genre, publisher)
                 .stream()
                 .map(BookSummaryDTO::from)
                 .toList();
