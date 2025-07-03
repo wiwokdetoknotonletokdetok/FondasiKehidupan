@@ -1,5 +1,6 @@
 package org.gaung.wiwokdetok.fondasikehidupan.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
@@ -28,7 +29,7 @@ public class BookController {
 
     @PostMapping
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> createBook(@RequestBody BookRequestDTO dto) {
+    public ResponseEntity<WebResponse<String>> createBook(@Valid @RequestBody BookRequestDTO dto) {
         bookService.createBook(dto);
 
         return ResponseEntity
@@ -65,10 +66,6 @@ public class BookController {
         if ("".equals(author)) author = null;
         if ("".equals(genre)) genre = null;
         if ("".equals(publisher)) publisher = null;
-        System.out.print("After null check: ");
-        System.out.printf("title: %s, isbn: %s, author: %s, genre: %s, publisher: %s%n",
-                title, isbn, author, genre, publisher);
-
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
                 .data(bookService.advancedSearch(title, isbn, author, genre, publisher))
                 .build());
