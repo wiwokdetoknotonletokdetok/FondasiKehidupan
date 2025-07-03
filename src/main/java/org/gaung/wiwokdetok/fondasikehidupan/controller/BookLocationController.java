@@ -30,13 +30,13 @@ public class BookLocationController {
     }
 
     @GetMapping(
-            path = "/books/{id}/locations",
+            path = "/books/{bookId}/locations",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookLocationResponse>>> getBookLocations(
-            @PathVariable Integer id) {
+            @PathVariable Long bookId) {
 
-        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(id, -6.3625, 106.8260);
+        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(bookId, -6.3625, 106.8260);
 
         WebResponse<List<BookLocationResponse>> response = WebResponse.<List<BookLocationResponse>>builder()
                 .data(bookLocations)
@@ -47,15 +47,15 @@ public class BookLocationController {
 
     @AllowedRoles({"USER"})
     @PostMapping(
-            path = "/books/{id}/locations",
+            path = "/books/{bookId}/locations",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> addBookLocation(
-            @PathVariable Integer id,
+            @PathVariable Long bookId,
             @Valid @RequestBody BookLocationRequest request) {
 
-        bookLocationService.addBookLocation(id, request);
+        bookLocationService.addBookLocation(bookId, request);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("Created")
@@ -71,8 +71,8 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> updateBookLocation(
-            @PathVariable Integer bookId,
-            @PathVariable Integer locationId,
+            @PathVariable Long bookId,
+            @PathVariable Long locationId,
             @Valid @RequestBody UpdateBookLocationRequest request) {
 
         bookLocationService.updateBookLocation(bookId, locationId, request);
@@ -90,8 +90,8 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> deleteBookLocation(
-            @PathVariable Integer bookId,
-            @PathVariable Integer locationId) {
+            @PathVariable Long bookId,
+            @PathVariable Long locationId) {
 
         bookLocationService.deleteBookLocation(bookId, locationId);
 

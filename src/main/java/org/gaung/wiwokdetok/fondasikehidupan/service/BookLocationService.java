@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface BookLocationService {
 
-    List<BookLocationResponse> getBookLocations(int id, double latitude, double longitude);
+    List<BookLocationResponse> getBookLocations(long bookId, double latitude, double longitude);
 
-    void addBookLocation(int id, BookLocationRequest request);
+    void addBookLocation(long bookId, BookLocationRequest request);
 
-    void updateBookLocation(int bookId, int locationId, UpdateBookLocationRequest request);
+    void updateBookLocation(long bookId, long locationId, UpdateBookLocationRequest request);
 
-    void deleteBookLocation(int bookId, int locationId);
+    void deleteBookLocation(long bookId, long locationId);
 }
