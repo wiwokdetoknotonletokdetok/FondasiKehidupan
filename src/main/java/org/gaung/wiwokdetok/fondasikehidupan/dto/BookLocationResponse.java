@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class BookLocationResponse {
 
-    private int id;
+    private long id;
 
     private String locationName;
 
@@ -15,7 +15,7 @@ public class BookLocationResponse {
 
     private double distanceMeters;
 
-    public BookLocationResponse(int id, String locationName, double latitude, double longitude, double distance) {
+    public BookLocationResponse(long id, String locationName, double latitude, double longitude, double distance) {
         this.id = id;
         this.locationName = locationName;
         this.coordinates = List.of(latitude, longitude);
