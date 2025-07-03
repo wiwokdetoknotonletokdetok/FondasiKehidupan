@@ -23,7 +23,7 @@ public interface BookLocationRepository extends JpaRepository<BookLocation, Long
     WHERE id_book = :bookId
     ORDER BY location <-> ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)
     """, nativeQuery = true)
-    List<Object[]> findAllNearestBookLocations(@Param("bookId") int bookId,
+    List<Object[]> findAllNearestBookLocations(@Param("bookId") long bookId,
                                                @Param("latitude") double latitude,
                                                @Param("longitude") double longitude);
 
