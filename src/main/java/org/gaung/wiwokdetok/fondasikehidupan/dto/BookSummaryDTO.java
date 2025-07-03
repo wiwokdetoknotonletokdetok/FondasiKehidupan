@@ -4,10 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
-import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +12,7 @@ public class BookSummaryDTO {
     private Long id;
     private String title;
     private String isbn;
-    private BigDecimal rating;
+    private float rating;
     private String bookPicture;
     private String publisherName;
 
