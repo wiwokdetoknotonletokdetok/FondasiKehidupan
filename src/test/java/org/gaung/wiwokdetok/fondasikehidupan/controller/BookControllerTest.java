@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
@@ -125,9 +124,7 @@ public class BookControllerTest {
         ).andExpect(
                 status().isCreated()
         ).andDo(result -> {
-            // TODO: Created seharusnya response string aja
-            // TODO: BookResponse seharusnya tampilkan informasi buku aja. Author, publisher, genre name boleh ditampilkan, tapi location gak perlu, book location bisa banyak
-            WebResponse<BookResponseDTO> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
             });
 
             assertNotNull(response.getData());
@@ -160,9 +157,7 @@ public class BookControllerTest {
         ).andExpect(
                 status().isCreated()
         ).andDo(result -> {
-            // TODO: Created seharusnya response string aja
-            // TODO: BookResponse seharusnya tampilkan informasi buku aja. Author, publisher, genre name boleh ditampilkan, tapi location gak perlu, book location bisa banyak
-            WebResponse<BookResponseDTO> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
             });
 
             assertNotNull(response.getData());
