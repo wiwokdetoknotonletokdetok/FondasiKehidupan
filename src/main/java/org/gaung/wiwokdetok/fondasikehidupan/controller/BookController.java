@@ -53,7 +53,7 @@ public class BookController {
                 .build());
     }
 
-    @GetMapping("/search")
+    @GetMapping("/s")
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String isbn,
