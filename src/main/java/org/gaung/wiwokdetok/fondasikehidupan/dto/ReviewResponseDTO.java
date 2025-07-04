@@ -11,10 +11,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewResponseDTO {
+
     private UUID userId;
-    private Long bookId;
+
+    private long bookId;
+
     private String message;
+
     private int rating;
+
     private OffsetDateTime createdAt;
+
     private OffsetDateTime updatedAt;
 }

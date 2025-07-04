@@ -1,7 +1,5 @@
 package org.gaung.wiwokdetok.fondasikehidupan.dto;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -28,10 +26,6 @@ public class BookRequestDTO {
 
     @NotBlank(message = "Sinopsis tidak boleh kosong")
     private String synopsis;
-
-    @DecimalMin(value = "0.0")
-    @DecimalMax(value = "5.0")
-    private float rating;
 
     @NotBlank(message = "Gambar buku tidak boleh kosong")
     private String bookPicture;

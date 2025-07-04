@@ -7,12 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
+
     private Long bookId;
 
     @NotBlank(message = "Pesan review tidak boleh kosong")
@@ -20,5 +19,5 @@ public class ReviewRequestDTO {
 
     @Min(value = 0, message = "Rating minimal adalah 0")
     @Max(value = 5, message = "Rating maksimal adalah 5")
-    private int rating;
+    private Integer rating;
 }
