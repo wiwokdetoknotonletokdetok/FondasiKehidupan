@@ -19,8 +19,4 @@ public class BookPublisherImpl implements BookPublisher {
     public void sendUpdateBookMessage(String message) {
         rabbitTemplate.convertAndSend("book.exchange", "book.updated", message);
     }
-
-    public void sendDeleteBookMessage(String message) {
-        rabbitTemplate.convertAndSend("book.exchange", "book.deleted", message);
-    }
 }

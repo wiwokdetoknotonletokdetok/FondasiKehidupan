@@ -20,10 +20,6 @@ public class RabbitMQConfig {
 
     public static final String ROUTING_KEY_BOOK_UPDATED = "book.updated";
 
-    public static final String QUEUE_BOOK_DELETED = "book.deleted";
-
-    public static final String ROUTING_KEY_BOOK_DELETED = "book.deleted";
-
     @Bean
     public TopicExchange bookExchange() {
         return new TopicExchange(EXCHANGE_NAME);
@@ -53,18 +49,5 @@ public class RabbitMQConfig {
                 .bind(bookUpdatedQueue)
                 .to(bookExchange)
                 .with(ROUTING_KEY_BOOK_UPDATED);
-    }
-
-    @Bean
-    public Queue bookDeletedQueue() {
-        return new Queue(QUEUE_BOOK_DELETED);
-    }
-
-    @Bean
-    public Binding bookDeletedBinding(Queue bookDeletedQueue, TopicExchange bookExchange) {
-        return BindingBuilder
-                .bind(bookDeletedQueue)
-                .to(bookExchange)
-                .with(ROUTING_KEY_BOOK_DELETED);
     }
 }

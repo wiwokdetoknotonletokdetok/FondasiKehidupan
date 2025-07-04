@@ -5,6 +5,4 @@ public interface BookPublisher {
     void sendNewBookMessage(String message);
 
     void sendUpdateBookMessage(String message);
-
-    void sendDeleteBookMessage(String message);
 }
