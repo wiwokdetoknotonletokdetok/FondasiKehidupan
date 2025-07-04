@@ -27,14 +27,7 @@ Semua endpoint pada controller ini hanya bisa diakses oleh user dengan role `USE
 
 ```json
 {
-  "data": {
-    "userId": "fa06d533-19c0-4a20-8a17-eeff93b7aefa",
-    "bookId": 1,
-    "message": "Buku yang sangat bagus dan inspiratif!",
-    "rating": 5,
-    "createdAt": "2025-07-01T15:30:10.666684Z",
-    "updatedAt": "2025-07-01T15:30:10.666684Z"
-  }
+  "data": "OK"
 }
 ```
 
@@ -63,14 +56,7 @@ Semua endpoint pada controller ini hanya bisa diakses oleh user dengan role `USE
 
 ```json
 {
-  "data": {
-    "userId": "fa06d533-19c0-4a20-8a17-eeff93b7aefa",
-    "bookId": 1,
-    "message": "Setelah dibaca ulang, ternyata ada bagian yang kurang.",
-    "rating": 4,
-    "createdAt": "2025-07-01T15:30:10.666684Z",
-    "updatedAt": "2025-07-01T15:31:55.9533113Z"
-  }
+  "data": "OK"
 }
 ```
 
