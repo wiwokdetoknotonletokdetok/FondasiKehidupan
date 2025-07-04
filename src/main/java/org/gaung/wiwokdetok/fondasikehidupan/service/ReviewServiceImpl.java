@@ -34,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewResponseDTO submitReview(ReviewRequestDTO dto) {
+    public void submitReview(UUID userId, ReviewRequestDTO dto) {
         if (dto.getBookId() == null || dto.getMessage() == null ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input");
         }
@@ -42,27 +42,25 @@ public class ReviewServiceImpl implements ReviewService {
         Book book = bookRepository.findById(dto.getBookId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
-        ReviewId id = new ReviewId(dto.getUserId(), dto.getBookId());
+        ReviewId id = new ReviewId(userId, dto.getBookId());
 
         if (reviewRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User sudah memberikan review");
         }
 
-        Review review = new Review(dto.getUserId(), book, dto.getMessage(), dto.getRating());
+        Review review = new Review(userId, book, dto.getMessage(), dto.getRating());
 
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         review.setCreatedAt(now);
         review.setUpdatedAt(now);
 
-        review = reviewRepository.save(review);
-
-        return toResponseDTO(review);
+        reviewRepository.save(review);
     }
 
     @Override
     @Transactional
-    public ReviewResponseDTO updateReview(ReviewRequestDTO dto) {
-        ReviewId id = new ReviewId(dto.getUserId(), dto.getBookId());
+    public void updateReview(UUID userId,ReviewRequestDTO dto) {
+        ReviewId id = new ReviewId(userId, dto.getBookId());
 
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review tidak ditemukan"));
@@ -71,9 +69,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.setRating(dto.getRating());
         review.setUpdatedAt(OffsetDateTime.now(ZoneOffset.UTC));
 
-        review = reviewRepository.save(review);
-
-        return toResponseDTO(review);
+        reviewRepository.save(review);
     }
 
     @Override
