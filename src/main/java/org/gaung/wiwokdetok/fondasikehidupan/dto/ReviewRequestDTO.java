@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReviewRequestDTO {
 
-    private Long bookId;
-
     @NotBlank(message = "Pesan review tidak boleh kosong")
     private String message;
 

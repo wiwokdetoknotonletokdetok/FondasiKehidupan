@@ -47,7 +47,7 @@ public class Book {
 
     private String language;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     @ManyToOne

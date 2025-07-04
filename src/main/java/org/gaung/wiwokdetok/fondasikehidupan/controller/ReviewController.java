@@ -1,55 +1,98 @@
 package org.gaung.wiwokdetok.fondasikehidupan.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.ReviewService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping
-    @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> submitReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
-        reviewService.submitReview(user.getId(), dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(WebResponse.<String>builder().data("OK").build());
+    @GetMapping(
+            path = "/books/{bookId}/reviews",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<List<ReviewResponseDTO>>> getReviewsForBook(
+            @PathVariable Long bookId) {
+
+        List<ReviewResponseDTO> reviews = reviewService.getReviewsForBook(bookId);
+
+        WebResponse<List<ReviewResponseDTO>> response = WebResponse.<List<ReviewResponseDTO>>builder()
+                .data(reviews)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
-    @PatchMapping
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> updateReview(@CurrentUser UserPrincipal user, @RequestBody ReviewRequestDTO dto) {
-        reviewService.updateReview(user.getId(), dto);
-        return ResponseEntity.ok(WebResponse.<String>builder().data("OK").build());
+    @PostMapping(
+            path = "/books/{bookId}/reviews",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> submitReview(
+            @CurrentUser UserPrincipal user,
+            @PathVariable Long bookId,
+            @Valid @RequestBody ReviewRequestDTO dto) {
+
+        reviewService.submitReview(user.getId(), bookId, dto);
+
+        WebResponse<String> response = WebResponse.<String>builder()
+                .data("Created")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @AllowedRoles({"USER"})
+    @PatchMapping(
+            path = "/books/{bookId}/reviews/{userId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> updateReview(
+            @CurrentUser UserPrincipal user,
+            @PathVariable Long bookId,
+            @PathVariable UUID userId,
+            @Valid @RequestBody UpdateReviewRequestDTO request) {
 
-    @GetMapping("/book/{bookId}")
-    public ResponseEntity<WebResponse<List<ReviewResponseDTO>>> getReviewsForBook(@PathVariable Long bookId) {
-        return ResponseEntity.ok(
-                WebResponse.<List<ReviewResponseDTO>>builder()
-                        .data(reviewService.getReviewsForBook(bookId))
-                        .build()
-        );
+        reviewService.updateReview(user.getId(), userId, bookId, request);
+
+        WebResponse<String> response = WebResponse.<String>builder()
+                .data("OK")
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{bookId}")
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> deleteReview(@CurrentUser UserPrincipal user, @PathVariable Long bookId) {
-        reviewService.deleteReview(user.getId(), bookId);
+    @DeleteMapping(
+            path = "/books/{bookId}/reviews/{userId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> deleteReview(
+            @CurrentUser UserPrincipal user,
+            @PathVariable Long bookId,
+            @PathVariable UUID userId) {
+
+        reviewService.deleteReview(user.getId(), userId, bookId);
+
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("OK")
                 .build();
