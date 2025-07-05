@@ -1,6 +1,9 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import lombok.RequiredArgsConstructor;
+import org.gaung.wiwokdetok.fondasikehidupan.config.RabbitMQConfig;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPointMessage;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,22 +17,16 @@ import java.util.Map;
 @Service
 public class PointServiceImpl implements PointService {
 
-    private final RestTemplate restTemplate;
+    private final RabbitTemplate rabbitTemplate;
+
     @Override
-    public void addPoints(String token, int points) {
-        String url = "https://wiwokdetok.gaung.org/users/me/points";
+    public void addPoints(String userId, int points) {
+        UserPointMessage message = new UserPointMessage(userId, points);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
-
-        Map<String, Integer> body = Map.of("points", points);
-        HttpEntity<Map<String, Integer>> request = new HttpEntity<>(body, headers);
-
-        try {
-            restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-        } catch (Exception e) {
-            System.err.println("Gagal menambahkan poin user: " + e.getMessage());
-        }
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.ROUTING_KEY_USER_POINTS,
+                message
+        );
     }
 }
