@@ -29,6 +29,9 @@ public class BookLocationServiceImpl implements BookLocationService {
 
     @Override
     public List<BookLocationResponse> getBookLocations(UUID bookId, double latitude, double longitude) {
+        bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
+
         List<Object[]> raw = bookLocationRepository.findAllNearestBookLocations(bookId, latitude, longitude);
 
         return raw.stream()

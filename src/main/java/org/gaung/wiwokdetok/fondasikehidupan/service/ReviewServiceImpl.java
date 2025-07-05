@@ -101,6 +101,15 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+    @Override
+    public void deleteReview(UUID userId, Long bookId) {
+        ReviewId id = new ReviewId(userId, bookId);
+        if (!reviewRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found");
+        }
+        reviewRepository.deleteById(id);
+    }
+
     private ReviewResponseDTO toResponseDTO(Review review) {
         return new ReviewResponseDTO(
                 review.getId().getIdUser(),

@@ -31,13 +31,13 @@ public class BookLocationController {
     }
 
     @GetMapping(
-            path = "/books/{id}/locations",
+            path = "/books/{bookId}/locations",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookLocationResponse>>> getBookLocations(
-            @PathVariable UUID id) {
+            @PathVariable UUID bookId) {
 
-        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(id, -6.3625, 106.8260);
+        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(bookId, -6.3625, 106.8260);
 
         WebResponse<List<BookLocationResponse>> response = WebResponse.<List<BookLocationResponse>>builder()
                 .data(bookLocations)
@@ -48,15 +48,15 @@ public class BookLocationController {
 
     @AllowedRoles({"USER"})
     @PostMapping(
-            path = "/books/{id}/locations",
+            path = "/books/{bookId}/locations",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> addBookLocation(
-            @PathVariable UUID id,
+            @PathVariable UUID bookId,
             @Valid @RequestBody BookLocationRequest request) {
 
-        bookLocationService.addBookLocation(id, request);
+        bookLocationService.addBookLocation(bookId, request);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("Created")

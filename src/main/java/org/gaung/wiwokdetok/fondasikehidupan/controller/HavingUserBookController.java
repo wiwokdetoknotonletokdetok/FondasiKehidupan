@@ -45,6 +45,7 @@ public class HavingUserBookController {
             @PathVariable UUID bookId) {
 
         service.removeBookFromUserCollection(user.getId(), bookId);
+  
         return ResponseEntity.ok(WebResponse.<String>builder()
                 .data("Buku berhasil dihapus dari koleksi")
                 .build());

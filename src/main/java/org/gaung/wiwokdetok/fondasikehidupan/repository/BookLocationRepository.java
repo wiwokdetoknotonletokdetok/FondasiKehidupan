@@ -28,5 +28,5 @@ public interface BookLocationRepository extends JpaRepository<BookLocation, Inte
                                                @Param("latitude") double latitude,
                                                @Param("longitude") double longitude);
 
-    Optional<BookLocation> findByIdAndBookId(long locationId, UUID bookId);
+    Optional<BookLocation> findByIdAndBookId(int locationId, UUID bookId);
 }
