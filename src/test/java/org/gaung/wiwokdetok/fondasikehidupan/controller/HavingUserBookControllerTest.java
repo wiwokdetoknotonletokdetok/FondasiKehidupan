@@ -51,12 +51,13 @@ public class HavingUserBookControllerTest {
     private HavingUserBookService service;
 
     private UUID userId;
-    private Long bookId;
+
+    private UUID bookId;
 
     @BeforeEach
     void setUp() {
         userId = UUID.randomUUID();
-        bookId = 1L;
+        bookId = UUID.randomUUID();
     }
 
     @Test
@@ -109,7 +110,7 @@ public class HavingUserBookControllerTest {
 
         List<BookSummaryDTO> books = List.of(
                 new BookSummaryDTO(
-                        1L,
+                        UUID.randomUUID(),
                         "Book Title",
                         "978-0-306-40615-7",
                         4.5f,
@@ -264,4 +265,3 @@ public class HavingUserBookControllerTest {
         });
     }
 }
-

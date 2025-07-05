@@ -76,7 +76,6 @@ public class BookControllerTest {
     @BeforeEach
     void setUp() {
         author = new Author();
-        author.setId(UUID.randomUUID());
         author.setName("author");
         authorRepository.save(author);
 
@@ -112,6 +111,9 @@ public class BookControllerTest {
         bookRequest.setSynopsis("Book Synopsis");
         bookRequest.setBookPicture("https://example.com");
         bookRequest.setPublisherName(publisher.getName());
+        bookRequest.setTotalPages(100);
+        bookRequest.setLanguage("Indonesia");
+        bookRequest.setPublishedYear(2020);
         bookRequest.setAuthorNames(List.of(author.getName()));
         bookRequest.setGenreIds(List.of(genre.getId()));
 
@@ -144,6 +146,9 @@ public class BookControllerTest {
         bookRequest.setIsbn("978-0-306-40615-7");
         bookRequest.setSynopsis("Book Synopsis");
         bookRequest.setBookPicture("https://example.com");
+        bookRequest.setTotalPages(100);
+        bookRequest.setLanguage("Indonesia");
+        bookRequest.setPublishedYear(2020);
         bookRequest.setPublisherName("New publisher");
         bookRequest.setAuthorNames(List.of("New author", "New author2"));
         bookRequest.setGenreIds(List.of(genre.getId()));
@@ -175,6 +180,9 @@ public class BookControllerTest {
         bookRequest.setIsbn("978-0-306-40615-7");
         bookRequest.setSynopsis("Book Synopsis");
         bookRequest.setBookPicture("https://example.com");
+        bookRequest.setTotalPages(100);
+        bookRequest.setLanguage("Indonesia");
+        bookRequest.setPublishedYear(2020);
         bookRequest.setPublisherName(publisher.getName());
         bookRequest.setAuthorNames(List.of(author.getName()));
         bookRequest.setGenreIds(List.of(genre.getId()));

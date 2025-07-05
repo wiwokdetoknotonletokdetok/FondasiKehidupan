@@ -9,9 +9,11 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Review;
 import org.gaung.wiwokdetok.fondasikehidupan.model.ReviewId;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.ReviewRepository;
@@ -60,6 +62,9 @@ public class ReviewControllerTest {
     private PublisherRepository publisherRepository;
 
     @Autowired
+    private BookLanguageRepository bookLanguageRepository;
+
+    @Autowired
     private ReviewRepository reviewRepository;
 
     private UUID userId1;
@@ -77,12 +82,17 @@ public class ReviewControllerTest {
         publisher.setName("publisher");
         publisherRepository.save(publisher);
 
+        BookLanguage language = new BookLanguage();
+        language.setLanguage("Indonesia");
+        bookLanguageRepository.save(language);
+
         book = new Book();
         book.setTitle("Book Title");
         book.setIsbn("978-0-306-40615-7");
         book.setSynopsis("Book Synopsis");
         book.setBookPicture("https://example.com");
         book.setPublisher(publisher);
+        book.setLanguage(language);
         bookRepository.save(book);
 
         ReviewId reviewId = new ReviewId(userId2, book.getId());
@@ -100,6 +110,7 @@ public class ReviewControllerTest {
         reviewRepository.deleteAll();
         bookRepository.deleteAll();
         publisherRepository.deleteAll();
+        bookLanguageRepository.deleteAll();
     }
 
     @Test
