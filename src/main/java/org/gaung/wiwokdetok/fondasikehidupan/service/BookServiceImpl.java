@@ -7,12 +7,8 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.*;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.*;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -24,6 +20,7 @@ import java.util.UUID;
 @Service
 public class BookServiceImpl implements BookService {
 
+    private final RestTemplate restTemplate;
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
     private final AuthorRepository authorRepository;
