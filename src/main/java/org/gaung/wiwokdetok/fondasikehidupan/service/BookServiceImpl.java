@@ -30,7 +30,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookResponseDTO createBook(BookRequestDTO dto, String token) {
+    public BookResponseDTO createBook(BookRequestDTO dto, String id) {
         Publisher publisher = publisherRepository.findByNameIgnoreCase(dto.getPublisherName().trim())
                 .orElseGet(() -> publisherRepository.save(new Publisher(null, dto.getPublisherName().trim())));
 
@@ -65,7 +65,7 @@ public class BookServiceImpl implements BookService {
             genres.add(genre.getGenre());
         }
 
-        pointService.addPoints(token, 25);
+        pointService.addPoints(id, 25);
         return BookResponseDTO.from(book, authors, genres, null);
     }
 

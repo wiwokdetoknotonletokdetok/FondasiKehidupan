@@ -24,10 +24,9 @@ public class BookController {
     @PostMapping
     public ResponseEntity<WebResponse<BookResponseDTO>> createBook(
             @RequestBody BookRequestDTO dto,
-            @RequestHeader("Authorization") String authHeader
+            @CurrentUser UserPrincipal user
     ) {
-        String token = authHeader.replace("Bearer ", "");
-        BookResponseDTO created = bookService.createBook(dto, token);
+        BookResponseDTO created = bookService.createBook(dto, user.getId().toString());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
