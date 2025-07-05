@@ -71,6 +71,7 @@ public class BookServiceImpl implements BookService {
             genres.add(genre.getGenre());
         }
 
+        addPoints(token, 25);
         return BookResponseDTO.from(book, authors, genres, null);
     }
 
