@@ -33,6 +33,7 @@ public class BookServiceImpl implements BookService {
     private final AuthoredByRepository authoredByRepository;
     private final HavingGenreRepository havingGenreRepository;
     private final BookLocationRepository bookLocationRepository;
+    private final PointService pointService;
 
     @Override
     @Transactional
@@ -71,7 +72,7 @@ public class BookServiceImpl implements BookService {
             genres.add(genre.getGenre());
         }
 
-        addPoints(token, 25);
+        pointService.addPoints(token, 25);
         return BookResponseDTO.from(book, authors, genres, null);
     }
 
@@ -110,21 +111,4 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
-    @Override
-    public void addPoints(String token, int points) {
-        String url = "http://localhost:8080/users/me/points"; // localhost [sementara]
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
-
-        Map<String, Integer> body = Map.of("points", points);
-        HttpEntity<Map<String, Integer>> request = new HttpEntity<>(body, headers);
-
-        try {
-            restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-        } catch (Exception e) {
-            System.err.println("Gagal menambahkan poin user: " + e.getMessage());
-        }
-    }
 }
