@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookResponseDTO createBook(BookRequestDTO dto) {
+    public BookResponseDTO createBook(BookRequestDTO dto, String token) {
         Publisher publisher = publisherRepository.findByNameIgnoreCase(dto.getPublisherName().trim())
                 .orElseGet(() -> publisherRepository.save(new Publisher(null, dto.getPublisherName().trim())));
 

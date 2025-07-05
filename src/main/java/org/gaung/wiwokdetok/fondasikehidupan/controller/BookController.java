@@ -28,7 +28,7 @@ public class BookController {
             @RequestHeader("Authorization") String authHeader
     ) {
         String token = authHeader.replace("Bearer ", "");
-        BookResponseDTO created = bookService.createBook(dto);
+        BookResponseDTO created = bookService.createBook(dto, token);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
