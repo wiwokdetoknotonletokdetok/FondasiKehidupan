@@ -24,7 +24,6 @@ public class BookController {
     @PostMapping
     public ResponseEntity<WebResponse<BookResponseDTO>> createBook(
             @RequestBody BookRequestDTO dto,
-            @CurrentUser UserPrincipal user,
             @RequestHeader("Authorization") String authHeader
     ) {
         String token = authHeader.replace("Bearer ", "");
