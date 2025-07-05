@@ -122,7 +122,7 @@ public class BookServiceImpl implements BookService {
         HttpEntity<Map<String, Integer>> request = new HttpEntity<>(body, headers);
 
         try {
-            restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+            restTemplate.exchange(url, HttpMethod.POST, request, String.class);
         } catch (Exception e) {
             System.err.println("Gagal menambahkan poin user: " + e.getMessage());
         }
