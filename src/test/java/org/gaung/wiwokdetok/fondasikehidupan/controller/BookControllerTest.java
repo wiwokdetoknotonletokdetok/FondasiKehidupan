@@ -7,10 +7,13 @@ import io.jsonwebtoken.JwtException;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.GenreRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.HavingGenreRepository;
@@ -33,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,6 +69,9 @@ public class BookControllerTest {
     private PublisherRepository publisherRepository;
 
     @Autowired
+    private BookLanguageRepository bookLanguageRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private Author author;
@@ -72,6 +79,8 @@ public class BookControllerTest {
     private Genre genre;
 
     private Publisher publisher;
+
+    private Book book;
 
     @BeforeEach
     void setUp() {
@@ -86,6 +95,19 @@ public class BookControllerTest {
         publisher = new Publisher();
         publisher.setName("publisher");
         publisherRepository.save(publisher);
+
+        BookLanguage language = new BookLanguage();
+        language.setLanguage("Indonesia");
+        bookLanguageRepository.save(language);
+
+        book = new Book();
+        book.setTitle("Book Title");
+        book.setIsbn("978-3-16-148410-0");
+        book.setSynopsis("Book Synopsis");
+        book.setBookPicture("https://example.com");
+        book.setPublisher(publisher);
+        book.setLanguage(language);
+        bookRepository.save(book);
     }
 
     @AfterEach
@@ -96,10 +118,11 @@ public class BookControllerTest {
         authorRepository.deleteAll();
         genreRepository.deleteAll();
         publisherRepository.deleteAll();
+        bookLanguageRepository.deleteAll();
     }
 
     @Test
-    void testCreateBookSuccessWhenAuthorAndPublisherAreAvailable() throws Exception {
+    void testCreateBookSuccess_authorAndPublisherAreAvailable() throws Exception {
         Claims payload = mock(Claims.class);
         when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
@@ -135,7 +158,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void testCreateBookSuccessWhenAuthorAndPublisherAreNotAvailable() throws Exception {
+    void testCreateBookSuccess_authorAndPublisherAreNotAvailable() throws Exception {
         Claims payload = mock(Claims.class);
         when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
@@ -171,7 +194,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void testCreateBookFailedWhenUserIsUnauthorized() throws Exception {
+    void testCreateBookFailed_userIsUnauthorized() throws Exception {
         when(jwtUtil.decodeToken("invalid.token.here"))
                 .thenThrow(new JwtException("Invalid token"));
 
@@ -195,6 +218,112 @@ public class BookControllerTest {
                         .header("Authorization", "Bearer invalid.token.here")
         ).andExpect(
                 status().isUnauthorized()
+        ).andDo(result -> {
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testCreateBookFailed_duplicateIsbn() throws Exception {
+        Claims payload = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
+        when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
+        when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        BookRequestDTO bookRequest = new BookRequestDTO();
+        bookRequest.setTitle("Book Title");
+        bookRequest.setIsbn("978-3-16-148410-0");
+        bookRequest.setSynopsis("Book Synopsis");
+        bookRequest.setBookPicture("https://example.com");
+        bookRequest.setTotalPages(100);
+        bookRequest.setLanguage("Indonesia");
+        bookRequest.setPublishedYear(2020);
+        bookRequest.setPublisherName(publisher.getName());
+        bookRequest.setAuthorNames(List.of(author.getName()));
+        bookRequest.setGenreIds(List.of(genre.getId()));
+
+        mockMvc.perform(
+                post("/books")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest))
+                        .header("Authorization", "Bearer valid.token.here")
+        ).andExpect(
+                status().isConflict()
+        ).andDo(result -> {
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testGetBookByIdSuccess_userIsNotAuthenticated() throws Exception {
+        mockMvc.perform(
+                get("/books/{bookId}", book.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getData());
+            assertNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testGetBookByIdSuccess_userIsAuthenticated() throws Exception {
+        Claims payload = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
+        when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
+        when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        mockMvc.perform(
+                get("/books/{bookId}", book.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer valid.token.here")
+        ).andExpect(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getData());
+            assertNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testGetBookByIdFailed_bookIsNotFound() throws Exception {
+        mockMvc.perform(
+                get("/books/{bookId}", UUID.randomUUID())
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isNotFound()
+        ).andDo(result -> {
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testGetBookByIdFailed_bookIdIsNotValidUUID() throws Exception {
+        mockMvc.perform(
+                get("/books/{bookId}", 123141)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isNotFound()
         ).andDo(result -> {
             WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
             });
