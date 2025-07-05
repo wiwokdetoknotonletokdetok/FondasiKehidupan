@@ -13,4 +13,5 @@ public interface BookService {
     List<BookSummaryDTO> findByTitleContainingIgnoreCase(String keyword);
     BookResponseDTO getBookById(Long idBook);
     List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher);
+    void addPoint(String token, int points);
 }
