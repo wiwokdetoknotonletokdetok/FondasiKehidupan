@@ -20,12 +20,10 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<WebResponse<ReviewResponseDTO>> submitReview(
-            @RequestBody ReviewRequestDTO dto,
-            @RequestHeader("Authorization") String authHeader
+            @RequestBody ReviewRequestDTO dto
     ) {
-        String token = authHeader.replace("Bearer ", "");
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                WebResponse.<ReviewResponseDTO>builder().data(reviewService.submitReview(dto, token)).build()
+                WebResponse.<ReviewResponseDTO>builder().data(reviewService.submitReview(dto)).build()
         );
     }
 
