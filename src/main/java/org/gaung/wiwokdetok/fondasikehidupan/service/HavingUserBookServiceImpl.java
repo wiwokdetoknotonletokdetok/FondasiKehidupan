@@ -19,14 +19,16 @@ import java.util.UUID;
 public class HavingUserBookServiceImpl implements HavingUserBookService {
 
     private final HavingUserBookRepository repository;
+
     private final BookRepository bookRepository;
 
     @Override
-    public void addBookToUser(UUID userId, Long bookId) {
+    public void addBookToUser(UUID userId, UUID bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku tidak ditemukan"));
 
         HavingUserBookId id = new HavingUserBookId(userId, bookId);
+
         if (repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Buku sudah ada dalam koleksi user ini.");
         }
@@ -44,7 +46,7 @@ public class HavingUserBookServiceImpl implements HavingUserBookService {
     }
 
     @Override
-    public void removeBookFromUserCollection(UUID userId, Long bookId) {
+    public void removeBookFromUserCollection(UUID userId, UUID bookId) {
         HavingUserBookId id = new HavingUserBookId(userId, bookId);
         if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku tidak ada dalam koleksi user ini.");

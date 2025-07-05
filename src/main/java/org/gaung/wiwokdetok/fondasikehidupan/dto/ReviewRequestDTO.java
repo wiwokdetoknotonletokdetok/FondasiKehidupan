@@ -7,14 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
-    private UUID userId;
-    private Long bookId;
 
     @NotBlank(message = "Pesan review tidak boleh kosong")
     private String message;

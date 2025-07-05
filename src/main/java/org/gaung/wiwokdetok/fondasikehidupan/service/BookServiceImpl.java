@@ -8,11 +8,13 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
 import org.gaung.wiwokdetok.fondasikehidupan.model.AuthoredBy;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.HavingGenre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.GenreRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.HavingGenreRepository;
@@ -21,9 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,65 +31,69 @@ import java.util.UUID;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+
     private final PublisherRepository publisherRepository;
+
     private final AuthorRepository authorRepository;
+
     private final GenreRepository genreRepository;
+
     private final AuthoredByRepository authoredByRepository;
+
     private final HavingGenreRepository havingGenreRepository;
+
+    private final BookLanguageRepository bookLanguageRepository;
 
     @Override
     @Transactional
-    public BookResponseDTO createBook(BookRequestDTO dto) {
+    public void createBook(BookRequestDTO dto) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
 
+        Publisher newPublisher = new Publisher();
+        newPublisher.setName(dto.getPublisherName().trim());
+
         Publisher publisher = publisherRepository.findByNameIgnoreCase(dto.getPublisherName().trim())
-                .orElseGet(() -> publisherRepository.save(new Publisher(null, dto.getPublisherName().trim())));
+                .orElseGet(() -> publisherRepository.save(newPublisher));
+
+        BookLanguage newLanguage = new BookLanguage();
+        newLanguage.setLanguage(dto.getLanguage().trim());
+
+        BookLanguage language = bookLanguageRepository.findByLanguageIgnoreCase(dto.getLanguage().trim())
+                .orElseGet(() -> bookLanguageRepository.save(newLanguage));
 
         Book book = new Book();
         book.setIsbn(dto.getIsbn());
         book.setSynopsis(dto.getSynopsis());
         book.setTitle(dto.getTitle());
-
-        book.setRating(0.0f);
         book.setBookPicture(dto.getBookPicture());
-        book.setPages(dto.getPages());
+        book.setTotalPages(dto.getTotalPages());
         book.setPublishedYear(dto.getPublishedYear());
-        book.setLanguage(dto.getLanguage());
-        book.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+        book.setLanguage(language);
         book.setPublisher(publisher);
-
         book = bookRepository.save(book);
 
-        List<String> authors = new ArrayList<>();
         for (String authorName : dto.getAuthorNames()) {
+            Author newAuthor = new Author();
+            newAuthor.setName(authorName.trim());
+
             Author author = authorRepository.findByNameIgnoreCase(authorName.trim())
-                    .orElseGet(() -> authorRepository.save(new Author(UUID.randomUUID(), authorName.trim())));
+                    .orElseGet(() -> authorRepository.save(newAuthor));
+
             authoredByRepository.save(new AuthoredBy(book, author));
-            authors.add(author.getName());
         }
 
-        List<String> genres = new ArrayList<>();
-        for (Long genreId : dto.getGenreIds()) {
+        for (Integer genreId : dto.getGenreIds()) {
             Genre genre = genreRepository.findById(genreId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Genre tidak ditemukan"));
+
             havingGenreRepository.save(new HavingGenre(book, genre));
-            genres.add(genre.getGenre());
         }
-
-        return BookResponseDTO.from(book, authors, genres);
     }
 
     @Override
-    public List<BookSummaryDTO> getAllBooks() {
-        return bookRepository.findAll().stream()
-                .map(BookSummaryDTO::from)
-                .toList();
-    }
-
-    @Override
-    public BookResponseDTO getBookById(Long idBook) {
+    public BookResponseDTO getBookById(UUID idBook) {
         Book book = bookRepository.findById(idBook)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 

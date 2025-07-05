@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,7 +52,6 @@ public class BookLocationServiceImplTest {
     public void setUp() {
 
         book = new Book();
-        book.setId(1L);
         book.setTitle("Book Title");
         book.setIsbn("978-0-306-40615-7");
         book.setSynopsis("Book Synopsis");
@@ -61,7 +61,6 @@ public class BookLocationServiceImplTest {
         Point point =  gf.createPoint(new Coordinate(106.82861863734638, -6.364475653741472));
 
         bookLocation = new BookLocation();
-        bookLocation.setId(1L);
         bookLocation.setBook(book);
         bookLocation.setLocationName("Book Location");
         bookLocation.setLocation(point);
@@ -69,7 +68,7 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testGetBookLocationSuccess() {
-        long bookId = book.getId();
+        UUID bookId = book.getId();
         double latitude = -6.3702510913875;
         double longitude = 106.82742266305259;
         double distance = 0.0;
@@ -98,7 +97,7 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testGetBookLocationSuccessButEmpty() {
-        long bookId = book.getId();
+        UUID bookId = book.getId();
         double latitude = -6.3702510913875;
         double longitude = 106.82742266305259;
 
@@ -117,7 +116,7 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testGetBookLocationFailedWhenBookIsNotExist() {
-        long bookId = 2000;
+        UUID bookId = UUID.randomUUID();
         double latitude = -6.3702510913875;
         double longitude = 106.82742266305259;
 
@@ -135,7 +134,7 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testAddBookLocationSuccess() {
-        long bookId = book.getId();
+        UUID bookId = book.getId();
         BookLocationRequest bookLocationRequest = new BookLocationRequest();
         bookLocationRequest.setLocationName(bookLocation.getLocationName());
         bookLocationRequest.setLatitude(bookLocation.getLocation().getY());
@@ -155,7 +154,7 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testAddBookLocationFailedWhenBookIsNotExist() {
-        long bookId = book.getId();
+        UUID bookId = book.getId();
         BookLocationRequest bookLocationRequest = new BookLocationRequest();
         bookLocationRequest.setLocationName(bookLocation.getLocationName());
         bookLocationRequest.setLatitude(bookLocation.getLocation().getY());
@@ -175,8 +174,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testUpdateBookLocationSuccessWithAllFields() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
         UpdateBookLocationRequest updateBookLocationRequest = new UpdateBookLocationRequest();
         updateBookLocationRequest.setLocationName(bookLocation.getLocationName());
         updateBookLocationRequest.setLatitude(bookLocation.getLocation().getY());
@@ -196,8 +195,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testUpdateBookLocationSuccessOnlyLocationName() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
         UpdateBookLocationRequest updateBookLocationRequest = new UpdateBookLocationRequest();
         updateBookLocationRequest.setLocationName(bookLocation.getLocationName());
 
@@ -215,8 +214,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testUpdateBookLocationSuccessOnlyLatitude() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
         UpdateBookLocationRequest updateBookLocationRequest = new UpdateBookLocationRequest();
         updateBookLocationRequest.setLongitude(bookLocation.getLocation().getX());
 
@@ -234,8 +233,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testUpdateBookLocationSuccessOnlyLongitude() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
         UpdateBookLocationRequest updateBookLocationRequest = new UpdateBookLocationRequest();
         updateBookLocationRequest.setLatitude(bookLocation.getLocation().getY());
 
@@ -253,8 +252,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testUpdateBookLocationFailedWhenLocationIsNotExist() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
         UpdateBookLocationRequest updateBookLocationRequest = new UpdateBookLocationRequest();
         updateBookLocationRequest.setLocationName(bookLocation.getLocationName());
 
@@ -272,8 +271,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testDeleteBookLocationSuccess() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
 
         when(bookLocationRepository.findByIdAndBookId(locationId, bookId))
                 .thenReturn(Optional.of(bookLocation));
@@ -288,8 +287,8 @@ public class BookLocationServiceImplTest {
 
     @Test
     void testDeleteBookLocationFailedWhenLocationIsNotExist() {
-        long bookId = book.getId();
-        long locationId = bookLocation.getId();
+        UUID bookId = book.getId();
+        int locationId = bookLocation.getId();
 
         when(bookLocationRepository.findByIdAndBookId(locationId, bookId))
                 .thenReturn(Optional.empty());

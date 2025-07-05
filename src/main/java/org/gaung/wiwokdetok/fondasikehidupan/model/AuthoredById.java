@@ -13,6 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthoredById implements Serializable {
-    private Long idBook;
-    private UUID idAuthor;
+
+    private UUID idBook;
+
+    private int idAuthor;
 }

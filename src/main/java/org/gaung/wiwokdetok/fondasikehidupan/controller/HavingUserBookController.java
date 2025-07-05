@@ -27,8 +27,12 @@ public class HavingUserBookController {
 
     @PostMapping("/me/books/{bookId}")
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> addBookToUser(@CurrentUser UserPrincipal user, @PathVariable Long bookId){
+    public ResponseEntity<WebResponse<String>> addBookToUser(
+            @CurrentUser UserPrincipal user,
+            @PathVariable UUID bookId){
+
         service.addBookToUser(user.getId(), bookId);
+
         return ResponseEntity.ok(WebResponse.<String>builder()
                 .data("Buku berhasil ditambahkan ke koleksi")
                 .build());
@@ -36,8 +40,12 @@ public class HavingUserBookController {
 
     @DeleteMapping("/me/books/{bookId}")
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> removeBookFromCollection(@CurrentUser UserPrincipal user, @PathVariable Long bookId) {
+    public ResponseEntity<WebResponse<String>> removeBookFromCollection(
+            @CurrentUser UserPrincipal user,
+            @PathVariable UUID bookId) {
+
         service.removeBookFromUserCollection(user.getId(), bookId);
+  
         return ResponseEntity.ok(WebResponse.<String>builder()
                 .data("Buku berhasil dihapus dari koleksi")
                 .build());
@@ -45,7 +53,9 @@ public class HavingUserBookController {
 
     @GetMapping("/{userId}/books")
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getUserBookCollection(@PathVariable UUID userId) {
+    public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getUserBookCollection(
+            @PathVariable UUID userId) {
+
         List<BookSummaryDTO> books = service.getUserBookCollection(userId);
 
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
@@ -55,7 +65,11 @@ public class HavingUserBookController {
 
     @GetMapping("/{userId}/books/count")
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<Integer>> countUserBooks(@PathVariable UUID userId) {
-        return ResponseEntity.ok(WebResponse.<Integer>builder().data(service.getTotalBookCollection(userId)).build());
+    public ResponseEntity<WebResponse<Integer>> countUserBooks(
+            @PathVariable UUID userId) {
+
+        return ResponseEntity.ok(WebResponse.<Integer>builder()
+                .data(service.getTotalBookCollection(userId))
+                .build());
     }
 }

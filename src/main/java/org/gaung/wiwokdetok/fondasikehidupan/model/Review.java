@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "review")
@@ -35,17 +34,9 @@ public class Review {
     @JoinColumn(name = "id_book")
     private Book book;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
-
-    public Review(UUID userId, Book book, String message, int rating) {
-        this.book = book;
-        this.message = message;
-        this.rating = rating;
-        this.id = new ReviewId(userId, book.getId());
-    }
 }
-

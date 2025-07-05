@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class BookLocationServiceImpl implements BookLocationService {
     private final BookLocationRepository bookLocationRepository;
 
     @Override
-    public List<BookLocationResponse> getBookLocations(long bookId, double latitude, double longitude) {
+    public List<BookLocationResponse> getBookLocations(UUID bookId, double latitude, double longitude) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
@@ -35,7 +36,7 @@ public class BookLocationServiceImpl implements BookLocationService {
 
         return raw.stream()
                 .map(row -> new BookLocationResponse(
-                        ((Number) row[0]).longValue(),
+                        (Integer) row[0],
                         (String) row[1],
                         ((Number) row[2]).doubleValue(),
                         ((Number) row[3]).doubleValue(),
@@ -45,7 +46,7 @@ public class BookLocationServiceImpl implements BookLocationService {
     }
 
     @Override
-    public void addBookLocation(long bookId, BookLocationRequest request) {
+    public void addBookLocation(UUID bookId, BookLocationRequest request) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
@@ -62,7 +63,7 @@ public class BookLocationServiceImpl implements BookLocationService {
     }
 
     @Override
-    public void updateBookLocation(long bookId, long locationId, UpdateBookLocationRequest request) {
+    public void updateBookLocation(UUID bookId, int locationId, UpdateBookLocationRequest request) {
         BookLocation bookLocation = bookLocationRepository.findByIdAndBookId(locationId, bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lokasi tidak ditemukan"));
 
@@ -88,7 +89,7 @@ public class BookLocationServiceImpl implements BookLocationService {
     }
 
     @Override
-    public void deleteBookLocation(long bookId, long locationId) {
+    public void deleteBookLocation(UUID bookId, int locationId) {
         bookLocationRepository.findByIdAndBookId(locationId, bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lokasi tidak ditemukan"));
 
