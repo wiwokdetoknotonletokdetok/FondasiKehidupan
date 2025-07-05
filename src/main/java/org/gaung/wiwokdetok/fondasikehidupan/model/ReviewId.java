@@ -13,6 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewId implements Serializable {
+
     private UUID idUser;
-    private Long idBook;
+
+    private UUID idBook;
 }
