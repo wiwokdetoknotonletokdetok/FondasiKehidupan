@@ -5,10 +5,13 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface BookService {
+
     void createBook(BookRequestDTO dto);
-    List<BookSummaryDTO> getAllBooks();
-    BookResponseDTO getBookById(Long idBook);
+
+    BookResponseDTO getBookById(UUID idBook);
+
     List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher);
 }

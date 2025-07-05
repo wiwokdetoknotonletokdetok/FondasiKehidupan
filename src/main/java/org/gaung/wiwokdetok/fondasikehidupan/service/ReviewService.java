@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public interface ReviewService {
 
-    void submitReview(UUID currentUserId, long bookId, ReviewRequestDTO request);
+    void submitReview(UUID currentUserId, UUID bookId, ReviewRequestDTO request);
 
-    void updateReview(UUID currentUserId, UUID userId, long bookId, UpdateReviewRequestDTO request);
+    void updateReview(UUID currentUserId, UUID userId, UUID bookId, UpdateReviewRequestDTO request);
 
-    List<ReviewResponseDTO> getReviewsForBook(long bookId);
+    List<ReviewResponseDTO> getReviewsForBook(UUID bookId);
 
-    void deleteReview(UUID currentUserId, UUID userId, long bookId);
+    void deleteReview(UUID currentUserId, UUID userId, UUID bookId);
 }

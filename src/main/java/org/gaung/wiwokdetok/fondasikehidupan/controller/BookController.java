@@ -9,27 +9,33 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
 import org.gaung.wiwokdetok.fondasikehidupan.service.BookService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
 
-    @PostMapping
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> createBook(@Valid @RequestBody BookRequestDTO dto) {
+    @PostMapping(
+            path = "/books",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> createBook(
+            @Valid @RequestBody BookRequestDTO dto) {
+
         bookService.createBook(dto);
 
         return ResponseEntity
@@ -39,17 +45,15 @@ public class BookController {
                         .build());
     }
 
-    @GetMapping
-    public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getAllBooks() {
-        return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
-                .data(bookService.getAllBooks())
-                .build());
-    }
+    @GetMapping(
+            path = "books/{bookId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(
+            @PathVariable UUID bookId) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(WebResponse.<BookResponseDTO>builder()
-                .data(bookService.getBookById(id))
+                .data(bookService.getBookById(bookId))
                 .build());
     }
 
@@ -71,4 +75,3 @@ public class BookController {
                 .build());
     }
 }
-

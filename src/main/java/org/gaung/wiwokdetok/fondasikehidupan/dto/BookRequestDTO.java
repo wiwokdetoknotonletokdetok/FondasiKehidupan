@@ -31,11 +31,14 @@ public class BookRequestDTO {
     private String bookPicture;
 
     @Min(1)
-    private Integer pages;
+    @NotNull
+    private Integer totalPages;
 
     @Min(0)
+    @NotNull
     private Integer publishedYear;
 
+    @NotBlank
     private String language;
 
     @NotBlank
@@ -46,5 +49,5 @@ public class BookRequestDTO {
     private List<@NotBlank String> authorNames;
 
     @NotEmpty(message = "Genre tidak boleh kosong")
-    private List<@NotNull Long> genreIds;
+    private List<@NotNull Integer> genreIds;
 }

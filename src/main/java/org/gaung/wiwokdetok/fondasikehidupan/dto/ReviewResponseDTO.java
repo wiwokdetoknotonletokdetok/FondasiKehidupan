@@ -14,7 +14,7 @@ public class ReviewResponseDTO {
 
     private UUID userId;
 
-    private long bookId;
+    private UUID bookId;
 
     private String message;
 

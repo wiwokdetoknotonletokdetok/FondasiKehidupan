@@ -29,7 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final BookRepository bookRepository;
 
     @Override
-    public List<ReviewResponseDTO> getReviewsForBook(long bookId) {
+    public List<ReviewResponseDTO> getReviewsForBook(UUID bookId) {
         return reviewRepository.findByBookId(bookId).stream()
                 .map(this::toResponseDTO)
                 .toList();
@@ -37,7 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public void submitReview(UUID currentUserId, long bookId, ReviewRequestDTO request) {
+    public void submitReview(UUID currentUserId, UUID bookId, ReviewRequestDTO request) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
@@ -62,7 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public void updateReview(UUID currentUserId, UUID userId, long bookId, UpdateReviewRequestDTO request) {
+    public void updateReview(UUID currentUserId, UUID userId, UUID bookId, UpdateReviewRequestDTO request) {
         validateUserOwnership(currentUserId, userId);
 
         ReviewId id = new ReviewId(userId, bookId);
@@ -80,7 +80,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void deleteReview(UUID currentUserId, UUID userId, long bookId) {
+    public void deleteReview(UUID currentUserId, UUID userId, UUID bookId) {
         validateUserOwnership(currentUserId, userId);
 
         ReviewId id = new ReviewId(userId, bookId);

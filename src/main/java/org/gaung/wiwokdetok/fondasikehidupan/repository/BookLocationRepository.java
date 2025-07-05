@@ -4,13 +4,14 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface BookLocationRepository extends JpaRepository<BookLocation, Long> {
-
-    Optional<BookLocation> findByBookId(Long bookId);
+@Repository
+public interface BookLocationRepository extends JpaRepository<BookLocation, Integer> {
 
     @Query(value = """
     SELECT 
@@ -23,9 +24,9 @@ public interface BookLocationRepository extends JpaRepository<BookLocation, Long
     WHERE id_book = :bookId
     ORDER BY location <-> ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)
     """, nativeQuery = true)
-    List<Object[]> findAllNearestBookLocations(@Param("bookId") int bookId,
+    List<Object[]> findAllNearestBookLocations(@Param("bookId") UUID bookId,
                                                @Param("latitude") double latitude,
                                                @Param("longitude") double longitude);
 
-    Optional<BookLocation> findByIdAndBookId(long locationId, long bookId);
+    Optional<BookLocation> findByIdAndBookId(long locationId, UUID bookId);
 }

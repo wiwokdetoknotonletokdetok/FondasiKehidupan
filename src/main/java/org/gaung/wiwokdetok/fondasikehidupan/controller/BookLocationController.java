@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class BookLocationController {
@@ -34,7 +35,7 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookLocationResponse>>> getBookLocations(
-            @PathVariable Integer id) {
+            @PathVariable UUID id) {
 
         List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(id, -6.3625, 106.8260);
 
@@ -52,7 +53,7 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> addBookLocation(
-            @PathVariable Integer id,
+            @PathVariable UUID id,
             @Valid @RequestBody BookLocationRequest request) {
 
         bookLocationService.addBookLocation(id, request);
@@ -71,7 +72,7 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> updateBookLocation(
-            @PathVariable Integer bookId,
+            @PathVariable UUID bookId,
             @PathVariable Integer locationId,
             @Valid @RequestBody UpdateBookLocationRequest request) {
 
@@ -90,7 +91,7 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> deleteBookLocation(
-            @PathVariable Integer bookId,
+            @PathVariable UUID bookId,
             @PathVariable Integer locationId) {
 
         bookLocationService.deleteBookLocation(bookId, locationId);

@@ -34,7 +34,7 @@ public class Book {
     @Column(length = 255, nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "DECIMAL(2,1)")
+    @Column(columnDefinition = "DECIMAL(2,1)")
     private float rating;
 
     @Column(name = "book_picture", length = 255, nullable = false)
@@ -46,7 +46,7 @@ public class Book {
     @Column(name = "total_reviews")
     private int totalReviews;
 
-    @Column(name = "published_year")
+    @Column(name = "published_year", nullable = false)
     private int publishedYear;
 
     @ManyToOne

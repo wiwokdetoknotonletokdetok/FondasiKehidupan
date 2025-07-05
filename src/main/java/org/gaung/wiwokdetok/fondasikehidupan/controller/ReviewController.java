@@ -35,7 +35,7 @@ public class ReviewController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<ReviewResponseDTO>>> getReviewsForBook(
-            @PathVariable Long bookId) {
+            @PathVariable UUID bookId) {
 
         List<ReviewResponseDTO> reviews = reviewService.getReviewsForBook(bookId);
 
@@ -54,7 +54,7 @@ public class ReviewController {
     )
     public ResponseEntity<WebResponse<String>> submitReview(
             @CurrentUser UserPrincipal user,
-            @PathVariable Long bookId,
+            @PathVariable UUID bookId,
             @Valid @RequestBody ReviewRequestDTO dto) {
 
         reviewService.submitReview(user.getId(), bookId, dto);
@@ -74,7 +74,7 @@ public class ReviewController {
     )
     public ResponseEntity<WebResponse<String>> updateReview(
             @CurrentUser UserPrincipal user,
-            @PathVariable Long bookId,
+            @PathVariable UUID bookId,
             @PathVariable UUID userId,
             @Valid @RequestBody UpdateReviewRequestDTO request) {
 
@@ -94,7 +94,7 @@ public class ReviewController {
     )
     public ResponseEntity<WebResponse<String>> deleteReview(
             @CurrentUser UserPrincipal user,
-            @PathVariable Long bookId,
+            @PathVariable UUID bookId,
             @PathVariable UUID userId) {
 
         reviewService.deleteReview(user.getId(), userId, bookId);
