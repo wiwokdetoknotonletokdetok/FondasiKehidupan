@@ -7,7 +7,12 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.*;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -26,11 +31,10 @@ public class BookServiceImpl implements BookService {
     private final AuthoredByRepository authoredByRepository;
     private final HavingGenreRepository havingGenreRepository;
     private final BookLocationRepository bookLocationRepository;
-    private final PointService pointService;
 
     @Override
     @Transactional
-    public BookResponseDTO createBook(BookRequestDTO dto, String token) {
+    public BookResponseDTO createBook(BookRequestDTO dto) {
         Publisher publisher = publisherRepository.findByNameIgnoreCase(dto.getPublisherName().trim())
                 .orElseGet(() -> publisherRepository.save(new Publisher(null, dto.getPublisherName().trim())));
 
@@ -65,7 +69,6 @@ public class BookServiceImpl implements BookService {
             genres.add(genre.getGenre());
         }
 
-        pointService.addPoints(token, 25);
         return BookResponseDTO.from(book, authors, genres, null);
     }
 
@@ -103,5 +106,4 @@ public class BookServiceImpl implements BookService {
                 .map(BookSummaryDTO::from)
                 .toList();
     }
-
 }

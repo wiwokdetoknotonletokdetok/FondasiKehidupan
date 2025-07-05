@@ -19,13 +19,9 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<WebResponse<ReviewResponseDTO>> submitReview(
-            @RequestBody ReviewRequestDTO dto,
-            @RequestHeader("Authorization") String authHeader
-    ) {
-        String token = authHeader.replace("Bearer ", "");
+    public ResponseEntity<WebResponse<ReviewResponseDTO>> submitReview(@RequestBody ReviewRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                WebResponse.<ReviewResponseDTO>builder().data(reviewService.submitReview(dto, token)).build()
+                WebResponse.<ReviewResponseDTO>builder().data(reviewService.submitReview(dto)).build()
         );
     }
 
