@@ -21,6 +21,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
+    private final PointService pointService;
 
     @Override
     public List<ReviewResponseDTO> getReviewsForBook(Long bookId) {
@@ -31,7 +32,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewResponseDTO submitReview(ReviewRequestDTO dto) {
+    public ReviewResponseDTO submitReview(ReviewRequestDTO dto, String token) {
         Book book = bookRepository.findById(dto.getBookId())
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
@@ -48,6 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.setUpdatedAt(now);
 
         review = reviewRepository.save(review);
+        pointService.addPoints(token, 10);
 
         return toResponseDTO(review);
     }
