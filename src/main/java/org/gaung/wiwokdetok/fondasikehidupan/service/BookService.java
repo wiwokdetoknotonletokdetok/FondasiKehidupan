@@ -8,7 +8,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import java.util.List;
 
 public interface BookService {
-    BookResponseDTO createBook(BookRequestDTO dto);
+    BookResponseDTO createBook(BookRequestDTO dto, String token);
     List<BookSummaryDTO> getAllBooks();
     List<BookSummaryDTO> findByTitleContainingIgnoreCase(String keyword);
     BookResponseDTO getBookById(Long idBook);
