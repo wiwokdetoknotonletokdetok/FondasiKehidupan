@@ -79,17 +79,6 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(review);
     }
 
-    @Override
-    public void deleteReview(UUID currentUserId, UUID userId, UUID bookId) {
-        validateUserOwnership(currentUserId, userId);
-
-        ReviewId id = new ReviewId(userId, bookId);
-
-        getReviewById(id);
-
-        reviewRepository.deleteById(id);
-    }
-
     private Review getReviewById(ReviewId id) {
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review tidak ditemukan"));
@@ -102,7 +91,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void deleteReview(UUID userId, Long bookId) {
+    public void deleteReview(UUID currentUserId, UUID userId, UUID bookId) {
+        validateUserOwnership(currentUserId, userId);
+
         ReviewId id = new ReviewId(userId, bookId);
         if (!reviewRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found");
