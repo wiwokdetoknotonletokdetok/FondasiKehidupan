@@ -7,6 +7,10 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.*;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
@@ -14,6 +18,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -102,5 +107,23 @@ public class BookServiceImpl implements BookService {
                 .stream()
                 .map(BookSummaryDTO::from)
                 .toList();
+    }
+
+    @Override
+    public void addPoints(String token, int points) {
+        String url = "http://localhost:8080/users/me/points"; // localhost [sementara]
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        Map<String, Integer> body = Map.of("points", points);
+        HttpEntity<Map<String, Integer>> request = new HttpEntity<>(body, headers);
+
+        try {
+            restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+        } catch (Exception e) {
+            System.err.println("Gagal menambahkan poin user: " + e.getMessage());
+        }
     }
 }
