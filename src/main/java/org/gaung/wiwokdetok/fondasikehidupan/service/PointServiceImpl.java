@@ -17,7 +17,7 @@ public class PointServiceImpl implements PointService {
     private final RestTemplate restTemplate;
     @Override
     public void addPoints(String token, int points) {
-        String url = "http://localhost:8080/users/me/points"; // localhost [sementara]
+        String url = "https://wiwokdetok.gaung.org/users/me/points";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
