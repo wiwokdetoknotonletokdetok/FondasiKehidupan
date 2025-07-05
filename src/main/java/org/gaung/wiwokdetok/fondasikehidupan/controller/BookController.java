@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
-import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +20,8 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<WebResponse<BookResponseDTO>> createBook(
-            @RequestBody BookRequestDTO dto,
-            @RequestHeader("Authorization") String authHeader
-    ) {
-        String token = authHeader.replace("Bearer ", "");
-        BookResponseDTO created = bookService.createBook(dto, token);
-
+    public ResponseEntity<WebResponse<BookResponseDTO>> createBook(@RequestBody BookRequestDTO dto) {
+        BookResponseDTO created = bookService.createBook(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(WebResponse.<BookResponseDTO>builder()
