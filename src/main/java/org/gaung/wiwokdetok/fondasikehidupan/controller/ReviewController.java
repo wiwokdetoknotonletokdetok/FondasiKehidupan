@@ -64,7 +64,6 @@ public class ReviewController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
     @AllowedRoles({"USER"})
     @PatchMapping(

@@ -27,6 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
 
     private final BookRepository bookRepository;
+    private final PointService pointService;
 
     @Override
     public List<ReviewResponseDTO> getReviewsForBook(UUID bookId) {
