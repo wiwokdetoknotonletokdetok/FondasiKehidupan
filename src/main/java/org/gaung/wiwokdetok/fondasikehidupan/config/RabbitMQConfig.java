@@ -23,6 +23,8 @@ public class RabbitMQConfig {
 
     public static final String ROUTING_KEY_BOOK_UPDATED = "book.updated";
 
+    public static final String QUEUE_USER_POINTS = "user.points";
+
     public static final String ROUTING_KEY_USER_POINTS = "user.points";
 
     @Bean
@@ -71,7 +73,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue userPointsQueue() {
-        return new Queue("user.points", true);
+        return new Queue(QUEUE_USER_POINTS, true);
     }
 
     @Bean
@@ -79,7 +81,7 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(userPointsQueue)
                 .to(bookExchange)
-                .with("user.points");
+                .with(ROUTING_KEY_USER_POINTS);
     }
 
 }
