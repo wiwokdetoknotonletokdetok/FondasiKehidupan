@@ -1,9 +1,7 @@
 package org.gaung.wiwokdetok.fondasikehidupan.config;
 
-import org.springframework.amqp.core.AnonymousQueue;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -25,7 +23,6 @@ public class RabbitMQConfig {
 
     public static final String ROUTING_KEY_BOOK_UPDATED = "book.updated";
 
-    public static final String QUEUE_USER_POINTS = "user.points";
     public static final String ROUTING_KEY_USER_POINTS = "user.points";
 
     @Bean
