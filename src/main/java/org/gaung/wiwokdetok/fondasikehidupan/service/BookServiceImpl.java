@@ -12,6 +12,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.HavingGenre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
@@ -22,13 +23,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.gaung.wiwokdetok.fondasikehidupan.model.*;
-import org.gaung.wiwokdetok.fondasikehidupan.repository.*;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -50,9 +45,12 @@ public class BookServiceImpl implements BookService {
 
     private final BookLanguageRepository bookLanguageRepository;
 
+    private final BookPublisher bookPublisher;
+    private final PointService pointService;
+
     @Override
     @Transactional
-    public void createBook(BookRequestDTO dto, String id) {
+    public void createBook(BookRequestDTO dto, String userId) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
@@ -96,6 +94,10 @@ public class BookServiceImpl implements BookService {
 
             havingGenreRepository.save(new HavingGenre(book, genre));
         }
+
+        bookPublisher.sendNewBookMessage("Buku baru ditambahkan dengan judul: " + book.getTitle());
+
+        pointService.addPoints(userId, 25);
     }
 
     @Override
@@ -104,7 +106,6 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
         List<String> authorNames = authorRepository.findAllNamesByBookId(idBook);
-
         List<String> genreNames = genreRepository.findAllNamesByBookId(idBook);
 
         return BookResponseDTO.from(book, authorNames, genreNames);

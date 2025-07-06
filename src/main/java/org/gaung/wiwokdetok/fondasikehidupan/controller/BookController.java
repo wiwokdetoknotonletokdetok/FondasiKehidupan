@@ -37,7 +37,7 @@ public class BookController {
     )
     public ResponseEntity<WebResponse<String>> createBook(
             @Valid @RequestBody BookRequestDTO dto,
-@Valid @CurrentUser UserPrincipal user) {
+            @Valid @CurrentUser UserPrincipal user) {
 
         bookService.createBook(dto, user.getId().toString());
 
