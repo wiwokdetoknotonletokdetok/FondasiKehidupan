@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.mapper.BookSummaryDTOMapper;
+import org.gaung.wiwokdetok.fondasikehidupan.projection.BookAuthorGenreProjection;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
 import org.gaung.wiwokdetok.fondasikehidupan.model.AuthoredBy;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
@@ -24,7 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -113,9 +118,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
-        return bookRepository.advancedSearch(title, isbn, author, genre, publisher)
-                .stream()
-                .map(BookSummaryDTO::from)
-                .toList();
+        List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
+        return BookSummaryDTOMapper.groupFromProjections(rows);
     }
 }
