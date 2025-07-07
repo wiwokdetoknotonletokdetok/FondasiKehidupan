@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.NewReviewMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
@@ -13,6 +15,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Review;
 import org.gaung.wiwokdetok.fondasikehidupan.model.ReviewId;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.ReviewPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
@@ -34,6 +37,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -54,6 +59,9 @@ public class ReviewControllerTest {
 
     @MockBean
     private JwtUtil jwtUtil;
+
+    @MockBean
+    private ReviewPublisher reviewPublisher;
 
     @Autowired
     private BookRepository bookRepository;
@@ -120,6 +128,8 @@ public class ReviewControllerTest {
         when(jwtUtil.decodeToken("valid.token")).thenReturn(claims);
         when(jwtUtil.getId(claims)).thenReturn(userId1);
         when(jwtUtil.getRole(claims)).thenReturn("USER");
+
+        doNothing().when(reviewPublisher).sendNewReviewMessage(any(NewReviewMessage.class));
 
         ReviewRequestDTO request = new ReviewRequestDTO();
         request.setMessage("Mantap");

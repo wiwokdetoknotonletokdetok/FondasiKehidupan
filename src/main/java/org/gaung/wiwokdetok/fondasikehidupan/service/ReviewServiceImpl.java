@@ -2,12 +2,14 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.NewReviewMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Review;
 import org.gaung.wiwokdetok.fondasikehidupan.model.ReviewId;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.ReviewPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.ReviewRepository;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
 
     private final BookRepository bookRepository;
+
+    private final ReviewPublisher reviewPublisher;
 
     @Override
     public List<ReviewResponseDTO> getReviewsForBook(UUID bookId) {
@@ -48,6 +52,14 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         createNewReview(id, book, request);
+        sendNewReviewMessage(currentUserId);
+    }
+
+    private void sendNewReviewMessage(UUID userId) {
+        NewReviewMessage message = new NewReviewMessage();
+        message.setCreatedBy(userId);
+
+        reviewPublisher.sendNewReviewMessage(message);
     }
 
     private void createNewReview(ReviewId id, Book book, ReviewRequestDTO request) {
