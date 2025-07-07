@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
@@ -35,7 +36,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -135,7 +136,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(anyString());
+        doNothing().when(bookPublisher).sendNewBookMessage(any(NewBookMessage.class));
 
 
         BookRequestDTO bookRequest = new BookRequestDTO();
@@ -174,7 +175,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(anyString());
+        doNothing().when(bookPublisher).sendNewBookMessage(any(NewBookMessage.class));
 
         BookRequestDTO bookRequest = new BookRequestDTO();
         bookRequest.setTitle("Book Title");

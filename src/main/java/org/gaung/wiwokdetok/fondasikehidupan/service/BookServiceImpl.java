@@ -112,11 +112,7 @@ public class BookServiceImpl implements BookService {
         message.setBookPicture(book.getBookPicture());
         message.setCreatedBy(book.getCreatedBy());
 
-        try {
-            String jsonMessage = objectMapper.writeValueAsString(message);
-            bookPublisher.sendNewBookMessage(jsonMessage);
-        } catch (Exception ignored) {
-        }
+        bookPublisher.sendNewBookMessage(message);
     }
 
     @Override
