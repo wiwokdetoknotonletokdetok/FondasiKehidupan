@@ -61,4 +61,7 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "id_publisher", nullable = false)
     private Publisher publisher;
+
+    @Column(name = "created_by", nullable = false)
+    private UUID createdBy;
 }

@@ -2,6 +2,7 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.gaung.wiwokdetok.fondasikehidupan.config.RabbitMQConfig;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
@@ -50,7 +51,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void createBook(BookRequestDTO dto, String userId) {
+    public void createBook(BookRequestDTO dto, UUID currentUserId) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
@@ -76,6 +77,7 @@ public class BookServiceImpl implements BookService {
         book.setPublishedYear(dto.getPublishedYear());
         book.setLanguage(language);
         book.setPublisher(publisher);
+        book.setCreatedBy(currentUserId);
         book = bookRepository.save(book);
 
         for (String authorName : dto.getAuthorNames()) {
@@ -97,7 +99,7 @@ public class BookServiceImpl implements BookService {
 
         bookPublisher.sendNewBookMessage("Buku baru ditambahkan dengan judul: " + book.getTitle());
 
-        pointService.addPoints(userId, 25);
+        pointService.addPoints(currentUserId.toString(), 25);
     }
 
     @Override

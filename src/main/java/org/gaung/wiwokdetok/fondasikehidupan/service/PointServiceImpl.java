@@ -17,7 +17,7 @@ public class PointServiceImpl implements PointService {
         UserPointMessage message = new UserPointMessage(userId, points);
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.BOOK_EXCHANGE_NAME,
                 RabbitMQConfig.ROUTING_KEY_USER_POINTS,
                 message
         );

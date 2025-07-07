@@ -1,5 +1,5 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 public interface PointService {
-    void addPoints(String token, int points);
+    void addPoints(String userId, int points);
 }

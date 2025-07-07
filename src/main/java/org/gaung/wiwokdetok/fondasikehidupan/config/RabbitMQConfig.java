@@ -13,18 +13,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String EXCHANGE_NAME = "book.exchange";
+    public static final String BOOK_EXCHANGE_NAME = "book.exchange";
 
     public static final String QUEUE_BOOK_ADDED = "book.added";
-
     public static final String ROUTING_KEY_BOOK_ADDED = "book.added";
 
     public static final String QUEUE_BOOK_UPDATED = "book.updated";
-
     public static final String ROUTING_KEY_BOOK_UPDATED = "book.updated";
 
-    public static final String QUEUE_USER_POINTS = "user.points";
+    public static final String REVIEW_EXCHANGE_NAME = "review.exchange";
 
+    public static final String QUEUE_REVIEW_ADDED = "review.added";
+    public static final String ROUTING_KEY_REVIEW_ADDED = "review.added";
+
+    public static final String QUEUE_REVIEW_UPDATED = "review.updated";
+    public static final String ROUTING_KEY_REVIEW_UPDATED = "review.updated";
+
+    public static final String QUEUE_USER_POINTS = "user.points";
     public static final String ROUTING_KEY_USER_POINTS = "user.points";
 
     @Bean
@@ -42,7 +47,7 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange bookExchange() {
-        return new TopicExchange(EXCHANGE_NAME, true, false);
+        return new TopicExchange(BOOK_EXCHANGE_NAME, true, false);
     }
 
     @Bean
@@ -84,4 +89,34 @@ public class RabbitMQConfig {
                 .with(ROUTING_KEY_USER_POINTS);
     }
 
+    @Bean
+    public TopicExchange reviewExchange() {
+        return new TopicExchange(REVIEW_EXCHANGE_NAME, true, false);
+    }
+
+    @Bean
+    public Queue reviewAddedQueue() {
+        return new Queue(QUEUE_REVIEW_ADDED, true);
+    }
+
+    @Bean
+    public Binding reviewAddedBinding(Queue reviewAddedQueue, TopicExchange reviewExchange) {
+        return BindingBuilder
+                .bind(reviewAddedQueue)
+                .to(reviewExchange)
+                .with(ROUTING_KEY_REVIEW_ADDED);
+    }
+
+    @Bean
+    public Queue reviewUpdatedQueue() {
+        return new Queue(QUEUE_REVIEW_UPDATED, true);
+    }
+
+    @Bean
+    public Binding reviewUpdatedBinding(Queue reviewUpdatedQueue, TopicExchange reviewExchange) {
+        return BindingBuilder
+                .bind(reviewUpdatedQueue)
+                .to(reviewExchange)
+                .with(ROUTING_KEY_REVIEW_UPDATED);
+    }
 }
