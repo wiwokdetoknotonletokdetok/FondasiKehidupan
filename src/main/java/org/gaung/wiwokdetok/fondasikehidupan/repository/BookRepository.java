@@ -1,17 +1,18 @@
 package org.gaung.wiwokdetok.fondasikehidupan.repository;
 
-import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
-    List<Book> findByTitleContainingIgnoreCase(String keyword);
+@Repository
+public interface BookRepository extends JpaRepository<Book, UUID> {
 
-    Book findBookById(Long id);
+    boolean existsByIsbn(String isbn);
 
     @Query("""
         SELECT DISTINCT b FROM Book b
@@ -20,8 +21,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         JOIN Author a ON a = ab.author
         JOIN HavingGenre hg ON hg.book = b
         JOIN Genre g ON g = hg.genre
-        WHERE (:title IS NULL OR CAST(b.title AS string) IS NOT NULL AND LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%')))
-          AND (:isbn IS NULL OR CAST(b.isbn AS string) IS NOT NULL AND LOWER(b.isbn) LIKE LOWER(CONCAT('%', :isbn, '%')))
+        WHERE (:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%')))
+          AND (:isbn IS NULL OR LOWER(b.isbn) LIKE LOWER(CONCAT('%', :isbn, '%')))
           AND (:author IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :author, '%')))
           AND (:genre IS NULL OR LOWER(g.genre) LIKE LOWER(CONCAT('%', :genre, '%')))
           AND (:publisher IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :publisher, '%')))

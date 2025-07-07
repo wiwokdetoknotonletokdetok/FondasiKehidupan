@@ -1,15 +1,12 @@
 package org.gaung.wiwokdetok.fondasikehidupan.controller;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
-import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
-import org.gaung.wiwokdetok.fondasikehidupan.service.ReviewService;
+import org.gaung.wiwokdetok.fondasikehidupan.service.BookLocationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,22 +22,25 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
-public class ReviewController {
+public class BookLocationController {
 
-    private final ReviewService reviewService;
+    private final BookLocationService bookLocationService;
+
+    public BookLocationController(BookLocationService bookLocationService) {
+        this.bookLocationService = bookLocationService;
+    }
 
     @GetMapping(
-            path = "/books/{bookId}/reviews",
+            path = "/books/{bookId}/locations",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<List<ReviewResponseDTO>>> getReviewsForBook(
+    public ResponseEntity<WebResponse<List<BookLocationResponse>>> getBookLocations(
             @PathVariable UUID bookId) {
 
-        List<ReviewResponseDTO> reviews = reviewService.getReviewsForBook(bookId);
+        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(bookId, -6.3625, 106.8260);
 
-        WebResponse<List<ReviewResponseDTO>> response = WebResponse.<List<ReviewResponseDTO>>builder()
-                .data(reviews)
+        WebResponse<List<BookLocationResponse>> response = WebResponse.<List<BookLocationResponse>>builder()
+                .data(bookLocations)
                 .build();
 
         return ResponseEntity.ok(response);
@@ -48,16 +48,15 @@ public class ReviewController {
 
     @AllowedRoles({"USER"})
     @PostMapping(
-            path = "/books/{bookId}/reviews",
+            path = "/books/{bookId}/locations",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<String>> submitReview(
-            @CurrentUser UserPrincipal user,
+    public ResponseEntity<WebResponse<String>> addBookLocation(
             @PathVariable UUID bookId,
-            @Valid @RequestBody ReviewRequestDTO dto) {
+            @Valid @RequestBody BookLocationRequest request) {
 
-        reviewService.submitReview(user.getId(), bookId, dto);
+        bookLocationService.addBookLocation(bookId, request);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("Created")
@@ -68,41 +67,39 @@ public class ReviewController {
 
     @AllowedRoles({"USER"})
     @PatchMapping(
-            path = "/books/{bookId}/reviews/{userId}",
+            path = "/books/{bookId}/locations/{locationId}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<String>> updateReview(
-            @CurrentUser UserPrincipal user,
+    public ResponseEntity<WebResponse<String>> updateBookLocation(
             @PathVariable UUID bookId,
-            @PathVariable UUID userId,
-            @Valid @RequestBody UpdateReviewRequestDTO request) {
+            @PathVariable Integer locationId,
+            @Valid @RequestBody UpdateBookLocationRequest request) {
 
-        reviewService.updateReview(user.getId(), userId, bookId, request);
+        bookLocationService.updateBookLocation(bookId, locationId, request);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("OK")
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @AllowedRoles({"USER"})
     @DeleteMapping(
-            path = "/books/{bookId}/reviews/{userId}",
+            path = "/books/{bookId}/locations/{locationId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<String>> deleteReview(
-            @CurrentUser UserPrincipal user,
+    public ResponseEntity<WebResponse<String>> deleteBookLocation(
             @PathVariable UUID bookId,
-            @PathVariable UUID userId) {
+            @PathVariable Integer locationId) {
 
-        reviewService.deleteReview(user.getId(), userId, bookId);
+        bookLocationService.deleteBookLocation(bookId, locationId);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("OK")
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

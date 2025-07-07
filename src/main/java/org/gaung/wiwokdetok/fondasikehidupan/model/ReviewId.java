@@ -1,7 +1,9 @@
 package org.gaung.wiwokdetok.fondasikehidupan.model;
 
 import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -11,6 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewId implements Serializable {
+
     private UUID idUser;
-    private Long idBook;
+
+    private UUID idBook;
 }

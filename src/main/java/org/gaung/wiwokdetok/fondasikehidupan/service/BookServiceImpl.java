@@ -5,13 +5,25 @@ import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.model.*;
-import org.gaung.wiwokdetok.fondasikehidupan.repository.*;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
+import org.gaung.wiwokdetok.fondasikehidupan.model.AuthoredBy;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
+import org.gaung.wiwokdetok.fondasikehidupan.model.HavingGenre;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.GenreRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.HavingGenreRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -20,80 +32,83 @@ import java.util.UUID;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+
     private final PublisherRepository publisherRepository;
+
     private final AuthorRepository authorRepository;
+
     private final GenreRepository genreRepository;
+
     private final AuthoredByRepository authoredByRepository;
+
     private final HavingGenreRepository havingGenreRepository;
-    private final BookLocationRepository bookLocationRepository;
+
+    private final BookLanguageRepository bookLanguageRepository;
+
+    private final BookPublisher bookPublisher;
     private final PointService pointService;
 
     @Override
     @Transactional
-    public BookResponseDTO createBook(BookRequestDTO dto, String id) {
+    public void createBook(BookRequestDTO dto, String userId) {
+        if (bookRepository.existsByIsbn(dto.getIsbn())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
+        }
+
+        Publisher newPublisher = new Publisher();
+        newPublisher.setName(dto.getPublisherName().trim());
+
         Publisher publisher = publisherRepository.findByNameIgnoreCase(dto.getPublisherName().trim())
-                .orElseGet(() -> publisherRepository.save(new Publisher(null, dto.getPublisherName().trim())));
+                .orElseGet(() -> publisherRepository.save(newPublisher));
+
+        BookLanguage newLanguage = new BookLanguage();
+        newLanguage.setLanguage(dto.getLanguage().trim());
+
+        BookLanguage language = bookLanguageRepository.findByLanguageIgnoreCase(dto.getLanguage().trim())
+                .orElseGet(() -> bookLanguageRepository.save(newLanguage));
 
         Book book = new Book();
         book.setIsbn(dto.getIsbn());
         book.setSynopsis(dto.getSynopsis());
         book.setTitle(dto.getTitle());
-
-        book.setRating(BigDecimal.ZERO);
         book.setBookPicture(dto.getBookPicture());
-        book.setPages(dto.getPages());
+        book.setTotalPages(dto.getTotalPages());
         book.setPublishedYear(dto.getPublishedYear());
-        book.setLanguage(dto.getLanguage());
-        book.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+        book.setLanguage(language);
         book.setPublisher(publisher);
-
         book = bookRepository.save(book);
 
-        List<String> authors = new ArrayList<>();
         for (String authorName : dto.getAuthorNames()) {
+            Author newAuthor = new Author();
+            newAuthor.setName(authorName.trim());
+
             Author author = authorRepository.findByNameIgnoreCase(authorName.trim())
-                    .orElseGet(() -> authorRepository.save(new Author(UUID.randomUUID(), authorName.trim())));
+                    .orElseGet(() -> authorRepository.save(newAuthor));
+
             authoredByRepository.save(new AuthoredBy(book, author));
-            authors.add(author.getName());
         }
 
-        List<String> genres = new ArrayList<>();
-        for (Long genreId : dto.getGenreIds()) {
+        for (Integer genreId : dto.getGenreIds()) {
             Genre genre = genreRepository.findById(genreId)
-                    .orElseThrow(() -> new RuntimeException("Genre not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Genre tidak ditemukan"));
+
             havingGenreRepository.save(new HavingGenre(book, genre));
-            genres.add(genre.getGenre());
         }
 
-        pointService.addPoints(id, 25);
-        return BookResponseDTO.from(book, authors, genres, null);
+        bookPublisher.sendNewBookMessage("Buku baru ditambahkan dengan judul: " + book.getTitle());
+
+        pointService.addPoints(userId, 25);
     }
 
     @Override
-    public List<BookSummaryDTO> getAllBooks() {
-        return bookRepository.findAll().stream()
-                .map(BookSummaryDTO::from)
-                .toList();
-    }
-
-    @Override
-    public List<BookSummaryDTO> findByTitleContainingIgnoreCase(String keyword) {
-        return bookRepository.findByTitleContainingIgnoreCase(keyword).stream()
-                .map(BookSummaryDTO::from)
-                .toList();
-    }
-
-    @Override
-    public BookResponseDTO getBookById(Long idBook) {
+    public BookResponseDTO getBookById(UUID idBook) {
         Book book = bookRepository.findById(idBook)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
-
-        BookLocation location = bookLocationRepository.findByBookId(idBook).orElse(null);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
         List<String> authorNames = authorRepository.findAllNamesByBookId(idBook);
         List<String> genreNames = genreRepository.findAllNamesByBookId(idBook);
 
-        return BookResponseDTO.from(book, authorNames, genreNames, location);
+        return BookResponseDTO.from(book, authorNames, genreNames);
     }
 
     @Override
@@ -103,5 +118,4 @@ public class BookServiceImpl implements BookService {
                 .map(BookSummaryDTO::from)
                 .toList();
     }
-
 }
