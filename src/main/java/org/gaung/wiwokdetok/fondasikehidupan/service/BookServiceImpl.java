@@ -1,6 +1,5 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
@@ -50,8 +49,6 @@ public class BookServiceImpl implements BookService {
     private final BookLanguageRepository bookLanguageRepository;
 
     private final BookPublisher bookPublisher;
-
-    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
