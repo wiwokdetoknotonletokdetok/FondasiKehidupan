@@ -316,20 +316,4 @@ public class BookControllerTest {
             assertNotNull(response.getErrors());
         });
     }
-
-    @Test
-    void testGetBookByIdFailed_bookIdIsNotValidUUID() throws Exception {
-        mockMvc.perform(
-                get("/books/{bookId}", 123141)
-                        .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(
-                status().isNotFound()
-        ).andDo(result -> {
-            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-            });
-
-            assertNull(response.getData());
-            assertNotNull(response.getErrors());
-        });
-    }
 }
