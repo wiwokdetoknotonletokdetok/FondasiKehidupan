@@ -5,6 +5,8 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.HavingUserBook;
 import org.gaung.wiwokdetok.fondasikehidupan.model.HavingUserBookId;
+import org.gaung.wiwokdetok.fondasikehidupan.projection.BookAuthorGenreProjection;
+import org.gaung.wiwokdetok.fondasikehidupan.mapper.BookSummaryDTOMapper;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.HavingUserBookRepository;
 import org.springframework.http.HttpStatus;
@@ -39,10 +41,8 @@ public class HavingUserBookServiceImpl implements HavingUserBookService {
 
     @Override
     public List<BookSummaryDTO> getUserBookCollection(UUID userId) {
-        List<Book> books = repository.findBooksByUserId(userId);
-        return books.stream()
-                .map(BookSummaryDTO::from)
-                .toList();
+        List<BookAuthorGenreProjection> rows = bookRepository.findUserBooksWithDetails(userId);
+        return BookSummaryDTOMapper.groupFromProjections(rows);
     }
 
     @Override

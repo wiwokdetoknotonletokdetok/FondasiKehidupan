@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,14 +25,20 @@ public class BookSummaryDTO {
 
     private String publisherName;
 
-    public static BookSummaryDTO from(Book book) {
+    private List<String> authorNames;
+
+    private List<String> genreNames;
+
+    public static BookSummaryDTO from(Book book, List<String> authorNames, List<String> genreNames) {
         return new BookSummaryDTO(
                 book.getId(),
                 book.getTitle(),
                 book.getIsbn(),
                 book.getRating(),
                 book.getBookPicture(),
-                book.getPublisher().getName()
+                book.getPublisher().getName(),
+                authorNames,
+                genreNames
         );
     }
 }

@@ -60,7 +60,10 @@ public class BookController {
                 .build());
     }
 
-    @GetMapping("/s")
+    @GetMapping(
+            path = "/books",
+            produces = "application/json"
+    )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String isbn,

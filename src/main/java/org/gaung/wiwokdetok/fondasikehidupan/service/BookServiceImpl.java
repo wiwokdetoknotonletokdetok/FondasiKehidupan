@@ -7,6 +7,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.mapper.BookSummaryDTOMapper;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
 import org.gaung.wiwokdetok.fondasikehidupan.model.AuthoredBy;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
@@ -14,6 +15,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.HavingGenre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
+import org.gaung.wiwokdetok.fondasikehidupan.projection.BookAuthorGenreProjection;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
@@ -130,9 +132,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
-        return bookRepository.advancedSearch(title, isbn, author, genre, publisher)
-                .stream()
-                .map(BookSummaryDTO::from)
-                .toList();
+        List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
+        return BookSummaryDTOMapper.groupFromProjections(rows);
     }
 }
