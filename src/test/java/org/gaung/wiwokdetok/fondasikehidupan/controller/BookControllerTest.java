@@ -11,6 +11,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
@@ -34,6 +35,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,6 +52,9 @@ public class BookControllerTest {
 
     @MockBean
     private JwtUtil jwtUtil;
+
+    @MockBean
+    private BookPublisher bookPublisher;
 
     @Autowired
     private BookRepository bookRepository;
@@ -128,6 +134,9 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
+        doNothing().when(bookPublisher).sendNewBookMessage(anyString());
+
+
         BookRequestDTO bookRequest = new BookRequestDTO();
         bookRequest.setTitle("Book Title");
         bookRequest.setIsbn("978-0-306-40615-7");
@@ -163,6 +172,8 @@ public class BookControllerTest {
         when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        doNothing().when(bookPublisher).sendNewBookMessage(anyString());
 
         BookRequestDTO bookRequest = new BookRequestDTO();
         bookRequest.setTitle("Book Title");
