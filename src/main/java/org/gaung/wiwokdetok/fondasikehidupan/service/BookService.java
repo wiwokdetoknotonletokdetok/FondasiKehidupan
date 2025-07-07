@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BookService {
-    void createBook(BookRequestDTO dto, String id);
+
+    void createBook(BookRequestDTO dto, UUID userId);
+
     BookResponseDTO getBookById(UUID idBook);
+
     List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher);
 }

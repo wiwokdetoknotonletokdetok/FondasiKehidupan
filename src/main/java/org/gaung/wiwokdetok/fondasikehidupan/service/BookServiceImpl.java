@@ -1,10 +1,12 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
 import org.gaung.wiwokdetok.fondasikehidupan.model.AuthoredBy;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
@@ -46,11 +48,12 @@ public class BookServiceImpl implements BookService {
     private final BookLanguageRepository bookLanguageRepository;
 
     private final BookPublisher bookPublisher;
-    private final PointService pointService;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
-    public void createBook(BookRequestDTO dto, String userId) {
+    public void createBook(BookRequestDTO dto, UUID userId) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
@@ -76,6 +79,7 @@ public class BookServiceImpl implements BookService {
         book.setPublishedYear(dto.getPublishedYear());
         book.setLanguage(language);
         book.setPublisher(publisher);
+        book.setCreatedBy(userId);
         book = bookRepository.save(book);
 
         for (String authorName : dto.getAuthorNames()) {
@@ -95,9 +99,22 @@ public class BookServiceImpl implements BookService {
             havingGenreRepository.save(new HavingGenre(book, genre));
         }
 
-        bookPublisher.sendNewBookMessage("Buku baru ditambahkan dengan judul: " + book.getTitle());
+        sendNewBookMessage(book);
+    }
 
-        pointService.addPoints(userId, 25);
+    private void sendNewBookMessage(Book book) {
+        NewBookMessage message = new NewBookMessage();
+        message.setId(book.getId());
+        message.setTitle(book.getTitle());
+        message.setSynopsis(book.getSynopsis());
+        message.setBookPicture(book.getBookPicture());
+        message.setCreatedBy(book.getCreatedBy());
+
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            bookPublisher.sendNewBookMessage(jsonMessage);
+        } catch (Exception ignored) {
+        }
     }
 
     @Override

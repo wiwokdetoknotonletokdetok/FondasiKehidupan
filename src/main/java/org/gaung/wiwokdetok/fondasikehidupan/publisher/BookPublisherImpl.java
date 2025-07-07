@@ -1,5 +1,6 @@
 package org.gaung.wiwokdetok.fondasikehidupan.publisher;
 
+import org.gaung.wiwokdetok.fondasikehidupan.config.RabbitMQConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,18 @@ public class BookPublisherImpl implements BookPublisher {
     }
 
     public void sendNewBookMessage(String message) {
-        rabbitTemplate.convertAndSend("book.exchange", "book.added", message);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.ROUTING_KEY_BOOK_ADDED,
+                message
+        );
     }
 
     public void sendUpdateBookMessage(String message) {
-        rabbitTemplate.convertAndSend("book.exchange", "book.updated", message);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.ROUTING_KEY_BOOK_UPDATED,
+                message
+        );
     }
 }

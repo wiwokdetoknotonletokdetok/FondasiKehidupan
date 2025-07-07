@@ -39,7 +39,7 @@ public class BookController {
             @Valid @RequestBody BookRequestDTO dto,
             @Valid @CurrentUser UserPrincipal user) {
 
-        bookService.createBook(dto, user.getId().toString());
+        bookService.createBook(dto, user.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
