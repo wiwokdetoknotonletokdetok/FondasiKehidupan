@@ -54,6 +54,9 @@ public class Book {
     @JoinColumn(name = "id_language", nullable = false)
     private BookLanguage language;
 
+    @Column(name = "created_by", nullable = false)
+    private UUID createdBy;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

@@ -113,6 +113,7 @@ public class BookControllerTest {
         book.setBookPicture("https://example.com");
         book.setPublisher(publisher);
         book.setLanguage(language);
+        book.setCreatedBy(UUID.randomUUID());
         bookRepository.save(book);
     }
 

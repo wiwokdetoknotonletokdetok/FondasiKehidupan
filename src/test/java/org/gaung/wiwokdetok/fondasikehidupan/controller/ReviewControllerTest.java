@@ -93,6 +93,7 @@ public class ReviewControllerTest {
         book.setBookPicture("https://example.com");
         book.setPublisher(publisher);
         book.setLanguage(language);
+        book.setCreatedBy(userId1);
         bookRepository.save(book);
 
         ReviewId reviewId = new ReviewId(userId2, book.getId());
