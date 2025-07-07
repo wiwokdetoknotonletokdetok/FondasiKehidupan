@@ -115,7 +115,9 @@ public class HavingUserBookControllerTest {
                         "978-0-306-40615-7",
                         4.5f,
                         "https://example.com/pic.jpg",
-                        "Publisher Name"
+                        "Publisher Name",
+                        List.of("Author One", "Author Two"),
+                        List.of("Genre One", "Genre Two")
                 )
         );
 
