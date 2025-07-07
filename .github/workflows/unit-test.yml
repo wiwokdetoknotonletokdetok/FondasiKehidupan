@@ -24,6 +24,11 @@ jobs:
         run: |
           cat <<EOF > .env
           JWT_SECRET=${{ secrets.JWT_SECRET }}
+          CLOUDFLARE_R2_ACCESS_KEY=test
+          CLOUDFLARE_R2_SECRET_KEY=test
+          CLOUDFLARE_R2_BUCKET_NAME=test
+          CLOUDFLARE_R2_ENDPOINT=test
+          CLOUDFLARE_R2_PUBLIC_ENDPOINT=test
           EOF
 
       - name: Grant execute permission for Gradle wrapper
