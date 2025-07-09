@@ -7,26 +7,29 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.HavingUserBookService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
 @RequiredArgsConstructor
 public class HavingUserBookController {
 
     private final HavingUserBookService service;
 
-    @PostMapping("/me/books/{bookId}")
     @AllowedRoles({"USER"})
+    @PostMapping(
+            path = "/users/me/books/{bookId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<WebResponse<String>> addBookToUser(
             @CurrentUser UserPrincipal user,
             @PathVariable UUID bookId){
@@ -38,8 +41,11 @@ public class HavingUserBookController {
                 .build());
     }
 
-    @DeleteMapping("/me/books/{bookId}")
     @AllowedRoles({"USER"})
+    @DeleteMapping(
+            path = "/users/me/books/{bookId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<WebResponse<String>> removeBookFromCollection(
             @CurrentUser UserPrincipal user,
             @PathVariable UUID bookId) {
@@ -51,8 +57,10 @@ public class HavingUserBookController {
                 .build());
     }
 
-    @GetMapping("/{userId}/books")
-    @AllowedRoles({"USER"})
+    @GetMapping(
+            path = "/users/{userId}/books",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getUserBookCollection(
             @PathVariable UUID userId) {
 
@@ -63,8 +71,10 @@ public class HavingUserBookController {
                 .build());
     }
 
-    @GetMapping("/{userId}/books/count")
-    @AllowedRoles({"USER"})
+    @GetMapping(
+            path = "/users/{userId}/books/count",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<WebResponse<Integer>> countUserBooks(
             @PathVariable UUID userId) {
 

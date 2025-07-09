@@ -62,7 +62,7 @@ public class BookController {
 
     @GetMapping(
             path = "/books",
-            produces = "application/json"
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
             @RequestParam(required = false) String title,
