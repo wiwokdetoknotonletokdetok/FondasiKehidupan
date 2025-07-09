@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
