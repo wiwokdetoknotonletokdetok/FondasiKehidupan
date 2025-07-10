@@ -70,6 +70,7 @@ public class HavingUserBookControllerTest {
         mockMvc.perform(
                 post("/users/me/books/{bookId}", bookId)
                         .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer valid.token")
         ).andExpect(
                 status().isOk()
@@ -174,13 +175,14 @@ public class HavingUserBookControllerTest {
 
 
     @Test
-    void testGetUserBookCollectionUnauthorized() throws Exception {
+    void testAddUserBookCollectionUnauthorized() throws Exception {
         when(jwtUtil.decodeToken("invalid.token"))
                 .thenThrow(new JwtException("Invalid token"));
 
         mockMvc.perform(
                 post("/users/me/books/{bookId}", bookId)
                         .header("Authorization", "Bearer invalid.token")
+                        .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 status().isUnauthorized()
         ).andDo(result -> {
@@ -202,15 +204,13 @@ public class HavingUserBookControllerTest {
 
         mockMvc.perform(
                 post("/users/me/books/{bookId}", bookId)
-                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer valid.token")
         ).andExpect(
                 status().isConflict()
         ).andDo(result -> {
-            WebResponse<?> response = objectMapper.readValue(
-                    result.getResponse().getContentAsString(),
-                    new TypeReference<>() {}
-            );
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
             assertNull(response.getData());
             assertNotNull(response.getErrors());
         });
