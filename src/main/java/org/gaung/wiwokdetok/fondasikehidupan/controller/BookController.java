@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +51,7 @@ public class BookController {
     }
 
     @GetMapping(
-            path = "books/{bookId}",
+            path = "/books/{bookId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(
@@ -58,6 +60,25 @@ public class BookController {
         return ResponseEntity.ok(WebResponse.<BookResponseDTO>builder()
                 .data(bookService.getBookById(bookId))
                 .build());
+    }
+
+    @PatchMapping(
+            path = "/books/{bookId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> updateBook(
+            @CurrentUser UserPrincipal user,
+            @Valid @RequestBody UpdateBookRequest request,
+            @PathVariable UUID bookId) {
+
+        bookService.updateBook(bookId, user.getId(), request);
+
+        WebResponse<String> response = WebResponse.<String>builder()
+                .data("OK")
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(

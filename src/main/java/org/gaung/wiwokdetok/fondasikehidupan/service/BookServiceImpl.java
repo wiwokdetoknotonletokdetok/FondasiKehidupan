@@ -6,28 +6,27 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.mapper.BookSummaryDTOMapper;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
-import org.gaung.wiwokdetok.fondasikehidupan.model.AuthoredBy;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
-import org.gaung.wiwokdetok.fondasikehidupan.model.HavingGenre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.projection.BookAuthorGenreProjection;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
-import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.GenreRepository;
-import org.gaung.wiwokdetok.fondasikehidupan.repository.HavingGenreRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -42,10 +41,6 @@ public class BookServiceImpl implements BookService {
 
     private final GenreRepository genreRepository;
 
-    private final AuthoredByRepository authoredByRepository;
-
-    private final HavingGenreRepository havingGenreRepository;
-
     private final BookLanguageRepository bookLanguageRepository;
 
     private final BookPublisher bookPublisher;
@@ -57,17 +52,13 @@ public class BookServiceImpl implements BookService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
 
-        Publisher newPublisher = new Publisher();
-        newPublisher.setName(dto.getPublisherName().trim());
+        Publisher publisher = handleBookPublisher(dto.getPublisherName());
 
-        Publisher publisher = publisherRepository.findByNameIgnoreCase(dto.getPublisherName().trim())
-                .orElseGet(() -> publisherRepository.save(newPublisher));
+        BookLanguage language = handleBookLanguage(dto.getLanguage());
 
-        BookLanguage newLanguage = new BookLanguage();
-        newLanguage.setLanguage(dto.getLanguage().trim());
+        List<Author> authors = handleBookAuthors(dto.getAuthorNames());
 
-        BookLanguage language = bookLanguageRepository.findByLanguageIgnoreCase(dto.getLanguage().trim())
-                .orElseGet(() -> bookLanguageRepository.save(newLanguage));
+        List<Genre> genres = handleBookGenres(dto.getGenreIds());
 
         Book book = new Book();
         book.setIsbn(dto.getIsbn());
@@ -77,26 +68,11 @@ public class BookServiceImpl implements BookService {
         book.setTotalPages(dto.getTotalPages());
         book.setPublishedYear(dto.getPublishedYear());
         book.setLanguage(language);
+        book.setAuthors(authors);
         book.setPublisher(publisher);
+        book.setGenres(genres);
         book.setCreatedBy(userId);
-        book = bookRepository.save(book);
-
-        for (String authorName : dto.getAuthorNames()) {
-            Author newAuthor = new Author();
-            newAuthor.setName(authorName.trim());
-
-            Author author = authorRepository.findByNameIgnoreCase(authorName.trim())
-                    .orElseGet(() -> authorRepository.save(newAuthor));
-
-            authoredByRepository.save(new AuthoredBy(book, author));
-        }
-
-        for (Integer genreId : dto.getGenreIds()) {
-            Genre genre = genreRepository.findById(genreId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Genre tidak ditemukan"));
-
-            havingGenreRepository.save(new HavingGenre(book, genre));
-        }
+        bookRepository.save(book);
 
         sendNewBookMessage(book);
     }
@@ -127,5 +103,132 @@ public class BookServiceImpl implements BookService {
     public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
         List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
         return BookSummaryDTOMapper.groupFromProjections(rows);
+    }
+
+    @Override
+    public void updateBook(UUID bookId, UUID stringId, UpdateBookRequest request) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
+
+        validateIsbnChange(book, request.getIsbn());
+
+        updateNonNullBookFields(book, request);
+
+        if (request.getAuthorNames() != null) {
+            List<Author> authors = handleBookAuthors(request.getAuthorNames());
+            book.setAuthors(authors);
+        }
+
+        if (request.getGenreIds() != null) {
+            List<Genre> genres = handleBookGenres(request.getGenreIds());
+            book.setGenres(genres);
+        }
+
+        if (request.getPublisherName() != null) {
+            Publisher publisher = handleBookPublisher(request.getPublisherName());
+            book.setPublisher(publisher);
+        }
+
+        if (request.getLanguage() != null) {
+            BookLanguage language = handleBookLanguage(request.getLanguage());
+            book.setLanguage(language);
+        }
+
+        bookRepository.save(book);
+    }
+
+    private List<Author> handleBookAuthors(List<String> authorNames) {
+        List<Author> authors = new ArrayList<>();
+
+        for (String authorName : authorNames) {
+            String formattedName = capitalizeWords(authorName);
+
+            Author newAuthor = new Author();
+            newAuthor.setName(formattedName);
+
+            Author author = authorRepository.findByNameIgnoreCase(formattedName)
+                    .orElseGet(() -> authorRepository.save(newAuthor));
+
+            authors.add(author);
+        }
+
+        return authors;
+    }
+
+    private List<Genre> handleBookGenres(List<Integer> genreIds) {
+        List<Genre> genres = new ArrayList<>();
+
+        for (int genreId : genreIds) {
+            Genre genre = genreRepository.findById(genreId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Genre tidak ditemukan"));
+
+            genres.add(genre);
+        }
+
+        return genres;
+    }
+
+    public Publisher handleBookPublisher(String publisher) {
+        String formattedPublisher = capitalizeWords(publisher);
+
+        Publisher newPublisher = new Publisher();
+        newPublisher.setName(formattedPublisher);
+
+        return publisherRepository.findByNameIgnoreCase(formattedPublisher)
+                .orElseGet(() -> publisherRepository.save(newPublisher));
+    }
+
+    private BookLanguage handleBookLanguage(String language) {
+        String formattedLanguage = capitalizeWords(language);
+
+        BookLanguage newLanguage = new BookLanguage();
+        newLanguage.setLanguage(formattedLanguage);
+
+        return bookLanguageRepository.findByLanguageIgnoreCase(formattedLanguage)
+                .orElseGet(() -> bookLanguageRepository.save(newLanguage));
+    }
+
+    private String capitalizeWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        String[] words = input.toLowerCase().split("\\s+");
+        StringBuilder capitalized = new StringBuilder();
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                capitalized.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1))
+                        .append(" ");
+            }
+        }
+
+        return capitalized.toString().trim();
+    }
+
+    private void updateNonNullBookFields(Book book, UpdateBookRequest request) {
+        Optional.ofNullable(request.getIsbn())
+                .ifPresent(book::setIsbn);
+
+        Optional.ofNullable(request.getTitle())
+                .ifPresent(book::setTitle);
+
+        Optional.ofNullable(request.getSynopsis())
+                .ifPresent(book::setSynopsis);
+
+        Optional.ofNullable(request.getTotalPages())
+                .ifPresent(book::setTotalPages);
+
+        Optional.ofNullable(request.getPublishedYear())
+                .ifPresent(book::setPublishedYear);
+    }
+
+    private void validateIsbnChange(Book book, String newIsbn) {
+        if (!book.getIsbn().equals(newIsbn)) {
+            if (bookRepository.findByIsbn(newIsbn).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku dengan ISBN tersebut sudah ada");
+            }
+        }
     }
 }
