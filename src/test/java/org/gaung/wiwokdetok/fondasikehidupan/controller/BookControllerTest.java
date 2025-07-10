@@ -14,11 +14,9 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
-import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthoredByRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.GenreRepository;
-import org.gaung.wiwokdetok.fondasikehidupan.repository.HavingGenreRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.security.JwtUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -64,13 +62,7 @@ public class BookControllerTest {
     private AuthorRepository authorRepository;
 
     @Autowired
-    private AuthoredByRepository authoredByRepository;
-
-    @Autowired
     private GenreRepository genreRepository;
-
-    @Autowired
-    private HavingGenreRepository havingGenreRepository;
 
     @Autowired
     private PublisherRepository publisherRepository;
@@ -115,13 +107,13 @@ public class BookControllerTest {
         book.setPublisher(publisher);
         book.setLanguage(language);
         book.setCreatedBy(UUID.randomUUID());
+        book.setGenres(List.of(genre));
+        book.setAuthors(List.of(author));
         bookRepository.save(book);
     }
 
     @AfterEach
     void tearDown() {
-        authoredByRepository.deleteAll();
-        havingGenreRepository.deleteAll();
         bookRepository.deleteAll();
         authorRepository.deleteAll();
         genreRepository.deleteAll();
