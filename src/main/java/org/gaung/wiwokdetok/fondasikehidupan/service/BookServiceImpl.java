@@ -2,10 +2,10 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.mapper.BookSummaryDTOMapper;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
@@ -78,7 +78,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void sendNewBookMessage(Book book) {
-        NewBookMessage message = new NewBookMessage();
+        AmqpBookMessage message = new AmqpBookMessage();
         message.setId(book.getId());
         message.setTitle(book.getTitle());
         message.setSynopsis(book.getSynopsis());

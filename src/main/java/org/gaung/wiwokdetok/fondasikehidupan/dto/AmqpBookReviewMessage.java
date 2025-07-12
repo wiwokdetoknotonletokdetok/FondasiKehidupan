@@ -9,15 +9,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewBookMessage {
-
-    private UUID id;
-
-    private String title;
-
-    private String synopsis;
-
-    private String bookPicture;
+public class AmqpBookReviewMessage {
 
     private UUID createdBy;
 }

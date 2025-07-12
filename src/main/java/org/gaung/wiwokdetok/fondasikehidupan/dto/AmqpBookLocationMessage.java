@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewReviewMessage {
+public class AmqpBookLocationMessage {
 
     private UUID createdBy;
 }
