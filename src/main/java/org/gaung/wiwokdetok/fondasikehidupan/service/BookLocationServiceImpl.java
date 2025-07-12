@@ -1,11 +1,13 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import lombok.RequiredArgsConstructor;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookLocationMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookLocationPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLocationRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.locationtech.jts.geom.Coordinate;
@@ -27,6 +29,8 @@ public class BookLocationServiceImpl implements BookLocationService {
 
     private final BookLocationRepository bookLocationRepository;
 
+    private final BookLocationPublisher bookLocationPublisher;
+
     @Override
     public List<BookLocationResponse> getBookLocations(UUID bookId, double latitude, double longitude) {
         bookRepository.findById(bookId)
@@ -46,7 +50,7 @@ public class BookLocationServiceImpl implements BookLocationService {
     }
 
     @Override
-    public void addBookLocation(UUID bookId, BookLocationRequest request) {
+    public void addBookLocation(UUID userId, UUID bookId, BookLocationRequest request) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
@@ -55,6 +59,15 @@ public class BookLocationServiceImpl implements BookLocationService {
         bookLocation.setLocation(createPoint(request.getLongitude(), request.getLatitude()));
         bookLocation.setBook(book);
         bookLocationRepository.save(bookLocation);
+
+        sendNewBookLocationMessage(userId);
+    }
+
+    private void sendNewBookLocationMessage(UUID userId) {
+        AmqpBookLocationMessage message = new AmqpBookLocationMessage();
+        message.setCreatedBy(userId);
+
+        bookLocationPublisher.sendNewBookLocationMessage(message);
     }
 
     private Point createPoint(double longitude, double latitude) {
