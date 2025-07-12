@@ -1,10 +1,17 @@
 package org.gaung.wiwokdetok.fondasikehidupan.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "review")
@@ -27,17 +34,9 @@ public class Review {
     @JoinColumn(name = "id_book")
     private Book book;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
-
-    public Review(UUID userId, Book book, String message, int rating) {
-        this.book = book;
-        this.message = message;
-        this.rating = rating;
-        this.id = new ReviewId(userId, book.getId());
-    }
 }
-
