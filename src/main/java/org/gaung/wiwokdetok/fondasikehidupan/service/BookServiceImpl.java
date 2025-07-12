@@ -74,10 +74,11 @@ public class BookServiceImpl implements BookService {
         book.setCreatedBy(userId);
         bookRepository.save(book);
 
-        sendNewBookMessage(book);
+        AmqpBookMessage message = createBookMessage(book);
+        bookPublisher.sendNewBookMessage(message);
     }
 
-    private void sendNewBookMessage(Book book) {
+    private AmqpBookMessage createBookMessage(Book book) {
         AmqpBookMessage message = new AmqpBookMessage();
         message.setId(book.getId());
         message.setTitle(book.getTitle());
@@ -85,7 +86,7 @@ public class BookServiceImpl implements BookService {
         message.setBookPicture(book.getBookPicture());
         message.setCreatedBy(book.getCreatedBy());
 
-        bookPublisher.sendNewBookMessage(message);
+        return message;
     }
 
     @Override
@@ -135,6 +136,11 @@ public class BookServiceImpl implements BookService {
         }
 
         bookRepository.save(book);
+
+        if (request.getTitle() != null || request.getSynopsis() != null) {
+            AmqpBookMessage message = createBookMessage(book);
+            bookPublisher.sendUpdateBookMessage(message);
+        }
     }
 
     private List<Author> handleBookAuthors(List<String> authorNames) {

@@ -146,7 +146,6 @@ public class BookControllerTest {
 
         doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
 
-
         BookRequestDTO bookRequest = new BookRequestDTO();
         bookRequest.setTitle("Book Title");
         bookRequest.setIsbn("978-0-306-40615-7");
@@ -345,7 +344,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         String updatedIsbn = "978-3-16-148410-7";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -378,7 +377,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         UpdateBookRequest bookRequest = new UpdateBookRequest();
         bookRequest.setIsbn(book.getIsbn());
@@ -410,7 +409,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         String updatedTitle = "New Title";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -443,7 +442,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         String updatedSynopsis = "New Synopsis";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -476,7 +475,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         int updatedTotalPages = 150;
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -509,7 +508,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         int updatedPublishedYear = 150;
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -542,7 +541,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         String updatedLanguage = "New Language";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -575,7 +574,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         String updatedPublisherName = "New Publisher";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -608,7 +607,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         List<String> updatedAuthorNames = List.of("New Author 1", "New Author 2");
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -655,7 +654,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         List<String> updatedAuthorNames = List.of(author.getName(), "New Author 1");
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -701,7 +700,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         List<Integer> updatedGenreIds = List.of(genre2.getId(), genre3.getId());
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -747,7 +746,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
 
         List<Integer> updatedGenreIds = List.of(10214);
         UpdateBookRequest bookRequest = new UpdateBookRequest();
