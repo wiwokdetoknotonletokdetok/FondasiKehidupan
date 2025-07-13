@@ -2,10 +2,10 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.mapper.BookSummaryDTOMapper;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Author;
@@ -74,18 +74,19 @@ public class BookServiceImpl implements BookService {
         book.setCreatedBy(userId);
         bookRepository.save(book);
 
-        sendNewBookMessage(book);
+        AmqpBookMessage message = createBookMessage(book);
+        bookPublisher.sendNewBookMessage(message);
     }
 
-    private void sendNewBookMessage(Book book) {
-        NewBookMessage message = new NewBookMessage();
+    private AmqpBookMessage createBookMessage(Book book) {
+        AmqpBookMessage message = new AmqpBookMessage();
         message.setId(book.getId());
         message.setTitle(book.getTitle());
         message.setSynopsis(book.getSynopsis());
         message.setBookPicture(book.getBookPicture());
         message.setCreatedBy(book.getCreatedBy());
 
-        bookPublisher.sendNewBookMessage(message);
+        return message;
     }
 
     @Override
@@ -135,6 +136,11 @@ public class BookServiceImpl implements BookService {
         }
 
         bookRepository.save(book);
+
+        if (request.getTitle() != null || request.getSynopsis() != null) {
+            AmqpBookMessage message = createBookMessage(book);
+            bookPublisher.sendUpdateBookMessage(message);
+        }
     }
 
     private List<Author> handleBookAuthors(List<String> authorNames) {

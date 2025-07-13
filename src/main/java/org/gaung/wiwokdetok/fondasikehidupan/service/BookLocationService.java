@@ -11,7 +11,7 @@ public interface BookLocationService {
 
     List<BookLocationResponse> getBookLocations(UUID bookId, double latitude, double longitude);
 
-    void addBookLocation(UUID bookId, BookLocationRequest request);
+    void addBookLocation(UUID userId, UUID bookId, BookLocationRequest request);
 
     void updateBookLocation(UUID bookId, int locationId, UpdateBookLocationRequest request);
 

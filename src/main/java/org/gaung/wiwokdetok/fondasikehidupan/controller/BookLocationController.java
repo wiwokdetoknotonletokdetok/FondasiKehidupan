@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
+import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.BookLocationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,10 +55,11 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> addBookLocation(
+            @CurrentUser UserPrincipal user,
             @PathVariable UUID bookId,
             @Valid @RequestBody BookLocationRequest request) {
 
-        bookLocationService.addBookLocation(bookId, request);
+        bookLocationService.addBookLocation(user.getId(), bookId, request);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("Created")

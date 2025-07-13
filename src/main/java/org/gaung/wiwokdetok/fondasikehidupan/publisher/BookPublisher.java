@@ -1,10 +1,10 @@
 package org.gaung.wiwokdetok.fondasikehidupan.publisher;
 
-import org.gaung.wiwokdetok.fondasikehidupan.dto.NewBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 
 public interface BookPublisher {
 
-    void sendNewBookMessage(NewBookMessage message);
+    void sendNewBookMessage(AmqpBookMessage message);
 
-    void sendUpdateBookMessage(String message);
+    void sendUpdateBookMessage(AmqpBookMessage message);
 }

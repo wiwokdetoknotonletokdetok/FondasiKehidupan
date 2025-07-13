@@ -1,10 +1,12 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookLocationMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookLocationPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLocationRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,8 +43,13 @@ public class BookLocationServiceImplTest {
     @Mock
     private BookLocationRepository bookLocationRepository;
 
+    @Mock
+    private BookLocationPublisher bookLocationPublisher;
+
     @InjectMocks
     private BookLocationServiceImpl bookLocationService;
+
+    private UUID userId;
 
     private Book book;
 
@@ -50,6 +57,7 @@ public class BookLocationServiceImplTest {
 
     @BeforeEach
     public void setUp() {
+        userId = UUID.randomUUID();
 
         book = new Book();
         book.setTitle("Book Title");
@@ -146,10 +154,13 @@ public class BookLocationServiceImplTest {
         when(bookLocationRepository.save(any(BookLocation.class)))
                 .thenReturn(bookLocation);
 
-        bookLocationService.addBookLocation(bookId, bookLocationRequest);
+        doNothing().when(bookLocationPublisher).sendNewBookLocationMessage(any(AmqpBookLocationMessage.class));
+
+        bookLocationService.addBookLocation(userId, bookId, bookLocationRequest);
 
         verify(bookRepository, times(1)).findById(bookId);
         verify(bookLocationRepository, times(1)).save(any(BookLocation.class));
+        verify(bookLocationPublisher, times(1)).sendNewBookLocationMessage(any(AmqpBookLocationMessage.class));
     }
 
     @Test
@@ -164,7 +175,7 @@ public class BookLocationServiceImplTest {
                 .thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            bookLocationService.addBookLocation(bookId, bookLocationRequest);
+            bookLocationService.addBookLocation(userId, bookId, bookLocationRequest);
         });
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
