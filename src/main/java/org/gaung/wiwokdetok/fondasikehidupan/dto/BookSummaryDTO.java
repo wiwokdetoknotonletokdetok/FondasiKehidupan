@@ -28,17 +28,4 @@ public class BookSummaryDTO {
     private List<String> authorNames;
 
     private List<String> genreNames;
-
-    public static BookSummaryDTO from(Book book, List<String> authorNames, List<String> genreNames) {
-        return new BookSummaryDTO(
-                book.getId(),
-                book.getTitle(),
-                book.getIsbn(),
-                book.getRating(),
-                book.getBookPicture(),
-                book.getPublisher().getName(),
-                authorNames,
-                genreNames
-        );
-    }
 }

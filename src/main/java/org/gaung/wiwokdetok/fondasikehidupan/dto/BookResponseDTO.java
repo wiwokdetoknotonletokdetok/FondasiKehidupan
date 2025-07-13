@@ -37,11 +37,21 @@ public class BookResponseDTO {
                 book.getIsbn(),
                 book.getTitle(),
                 book.getSynopsis(),
-                book.getRating(),
+                getAverageRating(book),
                 book.getBookPicture(),
                 book.getPublisher().getName(),
                 authorNames,
                 genreNames
         );
+    }
+
+    public static float getAverageRating(Book book) {
+        int totalReviews = book.getTotalReviews();
+
+        if (totalReviews == 0) {
+            return 0.0f;
+        }
+
+        return (float) book.getTotalRatings() / totalReviews;
     }
 }

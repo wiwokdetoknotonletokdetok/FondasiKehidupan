@@ -71,8 +71,8 @@ public class Book {
     )
     private List<Author> authors;
 
-    @Column(columnDefinition = "DECIMAL(2,1)")
-    private float rating;
+    @Column(name = "total_ratings")
+    private int totalRatings;
 
     @Column(name = "total_reviews")
     private int totalReviews;
