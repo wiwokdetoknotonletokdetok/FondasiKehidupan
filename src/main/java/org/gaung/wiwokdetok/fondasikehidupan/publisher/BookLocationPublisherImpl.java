@@ -1,6 +1,6 @@
 package org.gaung.wiwokdetok.fondasikehidupan.publisher;
 
-import org.gaung.wiwokdetok.fondasikehidupan.config.AmqpBookConfig;
+import org.gaung.wiwokdetok.fondasikehidupan.config.AmqpConfig;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookLocationMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,8 @@ public class BookLocationPublisherImpl implements BookLocationPublisher {
     @Override
     public void sendNewBookLocationMessage(AmqpBookLocationMessage message) {
         rabbitTemplate.convertAndSend(
-                AmqpBookConfig.EXCHANGE_NAME,
-                "",
+                AmqpConfig.EXCHANGE_NAME,
+                AmqpConfig.ROUTING_KEY_USER_POINTS_LOCATION,
                 message
         );
     }

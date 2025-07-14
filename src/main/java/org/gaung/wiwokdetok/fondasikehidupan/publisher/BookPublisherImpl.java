@@ -1,6 +1,6 @@
 package org.gaung.wiwokdetok.fondasikehidupan.publisher;
 
-import org.gaung.wiwokdetok.fondasikehidupan.config.AmqpBookConfig;
+import org.gaung.wiwokdetok.fondasikehidupan.config.AmqpConfig;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,8 @@ public class BookPublisherImpl implements BookPublisher {
     @Override
     public void sendNewBookMessage(AmqpBookMessage message) {
         rabbitTemplate.convertAndSend(
-                AmqpBookConfig.EXCHANGE_NAME,
-                "",
+                AmqpConfig.EXCHANGE_NAME,
+                AmqpConfig.ROUTING_KEY_BOOK_ADDED,
                 message
         );
     }
@@ -26,7 +26,7 @@ public class BookPublisherImpl implements BookPublisher {
     @Override
     public void sendUpdateBookMessage(AmqpBookMessage message) {
         rabbitTemplate.convertAndSend(
-                AmqpBookConfig.EXCHANGE_NAME,
+                AmqpConfig.EXCHANGE_NAME,
                 "",
                 message
         );
