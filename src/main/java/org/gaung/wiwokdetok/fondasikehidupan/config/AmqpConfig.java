@@ -16,7 +16,7 @@ public class AmqpConfig {
 
     public static final String QUEUE_BOOK = "pustakacerdas.book.queue";
 
-    public static final String QUEUE_USER_POINTS = "fondasikehidupan.points.queue";
+    public static final String QUEUE_USER_POINTS = "kapsulkeaslian.points.queue";
 
     public static final String ROUTING_KEY_BOOK_ADDED = "book.added";
 
