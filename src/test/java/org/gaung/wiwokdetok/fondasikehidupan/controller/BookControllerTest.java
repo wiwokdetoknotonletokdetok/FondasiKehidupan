@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookRequest;
@@ -15,6 +16,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
@@ -58,6 +60,9 @@ public class BookControllerTest {
 
     @MockBean
     private BookPublisher bookPublisher;
+
+    @MockBean
+    private UserPointsPublisher userPointsPublisher;
 
     @Autowired
     private BookRepository bookRepository;
@@ -144,7 +149,8 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(userPointsPublisher).sendUserPointsForBook(any(AmqpUserPointsMessage.class));
 
         BookRequestDTO bookRequest = new BookRequestDTO();
         bookRequest.setTitle("Book Title");
@@ -182,7 +188,8 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendNewBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(userPointsPublisher).sendUserPointsForBook(any(AmqpUserPointsMessage.class));
 
         BookRequestDTO bookRequest = new BookRequestDTO();
         bookRequest.setTitle("Book Title");
@@ -344,7 +351,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         String updatedIsbn = "978-3-16-148410-7";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -377,7 +384,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         UpdateBookRequest bookRequest = new UpdateBookRequest();
         bookRequest.setIsbn(book.getIsbn());
@@ -409,7 +416,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         String updatedTitle = "New Title";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -442,7 +449,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         String updatedSynopsis = "New Synopsis";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -475,7 +482,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         int updatedTotalPages = 150;
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -508,7 +515,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         int updatedPublishedYear = 150;
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -541,7 +548,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         String updatedLanguage = "New Language";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -574,7 +581,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         String updatedPublisherName = "New Publisher";
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -607,7 +614,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         List<String> updatedAuthorNames = List.of("New Author 1", "New Author 2");
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -654,7 +661,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         List<String> updatedAuthorNames = List.of(author.getName(), "New Author 1");
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -700,7 +707,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         List<Integer> updatedGenreIds = List.of(genre2.getId(), genre3.getId());
         UpdateBookRequest bookRequest = new UpdateBookRequest();
@@ -746,7 +753,7 @@ public class BookControllerTest {
         when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
-        doNothing().when(bookPublisher).sendUpdateBookMessage(any(AmqpBookMessage.class));
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
 
         List<Integer> updatedGenreIds = List.of(10214);
         UpdateBookRequest bookRequest = new UpdateBookRequest();

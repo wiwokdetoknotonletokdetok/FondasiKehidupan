@@ -1,12 +1,14 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookLocationMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookLocationPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLocationRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +46,7 @@ public class BookLocationServiceImplTest {
     private BookLocationRepository bookLocationRepository;
 
     @Mock
-    private BookLocationPublisher bookLocationPublisher;
+    private UserPointsPublisher userPointsPublisher;
 
     @InjectMocks
     private BookLocationServiceImpl bookLocationService;
@@ -154,13 +156,13 @@ public class BookLocationServiceImplTest {
         when(bookLocationRepository.save(any(BookLocation.class)))
                 .thenReturn(bookLocation);
 
-        doNothing().when(bookLocationPublisher).sendNewBookLocationMessage(any(AmqpBookLocationMessage.class));
+        doNothing().when(userPointsPublisher).sendUserPointsForLocation(any(AmqpUserPointsMessage.class));
 
         bookLocationService.addBookLocation(userId, bookId, bookLocationRequest);
 
         verify(bookRepository, times(1)).findById(bookId);
         verify(bookLocationRepository, times(1)).save(any(BookLocation.class));
-        verify(bookLocationPublisher, times(1)).sendNewBookLocationMessage(any(AmqpBookLocationMessage.class));
+        verify(userPointsPublisher, times(1)).sendUserPointsForLocation(any(AmqpUserPointsMessage.class));
     }
 
     @Test
