@@ -18,7 +18,7 @@ public class BookPublisherImpl implements BookPublisher {
     public void sendNewBookMessage(AmqpBookMessage message) {
         rabbitTemplate.convertAndSend(
                 AmqpBookConfig.EXCHANGE_NAME,
-                AmqpBookConfig.ROUTING_KEY_BOOK_ADDED,
+                "",
                 message
         );
     }
@@ -27,7 +27,7 @@ public class BookPublisherImpl implements BookPublisher {
     public void sendUpdateBookMessage(AmqpBookMessage message) {
         rabbitTemplate.convertAndSend(
                 AmqpBookConfig.EXCHANGE_NAME,
-                AmqpBookConfig.ROUTING_KEY_BOOK_UPDATED,
+                "",
                 message
         );
     }

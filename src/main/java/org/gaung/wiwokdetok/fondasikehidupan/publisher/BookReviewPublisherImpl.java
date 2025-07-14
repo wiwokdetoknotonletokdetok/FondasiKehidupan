@@ -18,7 +18,7 @@ public class BookReviewPublisherImpl implements BookReviewPublisher {
     public void sendNewBookReviewMessage(AmqpBookReviewMessage message) {
         rabbitTemplate.convertAndSend(
                 AmqpBookConfig.EXCHANGE_NAME,
-                AmqpBookConfig.ROUTING_KEY_BOOK_LOCATION_ADDED,
+                "",
                 message
         );
     }
