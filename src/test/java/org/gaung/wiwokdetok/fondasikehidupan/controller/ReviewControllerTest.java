@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookReviewMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
@@ -14,7 +14,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Review;
 import org.gaung.wiwokdetok.fondasikehidupan.model.ReviewId;
-import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookReviewPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
@@ -60,7 +60,7 @@ public class ReviewControllerTest {
     private JwtUtil jwtUtil;
 
     @MockBean
-    private BookReviewPublisher bookReviewPublisher;
+    private UserPointsPublisher userPointsPublisher;
 
     @Autowired
     private BookRepository bookRepository;
@@ -128,7 +128,7 @@ public class ReviewControllerTest {
         when(jwtUtil.getId(claims)).thenReturn(userId1);
         when(jwtUtil.getRole(claims)).thenReturn("USER");
 
-        doNothing().when(bookReviewPublisher).sendNewBookReviewMessage(any(AmqpBookReviewMessage.class));
+        doNothing().when(userPointsPublisher).sendUserPointsForReview(any(AmqpUserPointsMessage.class));
 
         ReviewRequestDTO request = new ReviewRequestDTO();
         request.setMessage("Mantap");

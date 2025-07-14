@@ -9,7 +9,9 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AmqpBookReviewMessage {
+public class AmqpUserPointsMessage {
 
-    private UUID createdBy;
+    private UUID userId;
+
+    private int points;
 }

@@ -3,6 +3,7 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
@@ -15,6 +16,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.projection.BookAuthorGenreProjection;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
@@ -44,6 +46,8 @@ public class BookServiceImpl implements BookService {
     private final BookLanguageRepository bookLanguageRepository;
 
     private final BookPublisher bookPublisher;
+
+    private final UserPointsPublisher userPointsPublisher;
 
     @Override
     @Transactional
@@ -75,7 +79,12 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
 
         AmqpBookMessage message = createBookMessage(book);
-        bookPublisher.sendNewBookMessage(message);
+        bookPublisher.sendBookMessage(message);
+
+        AmqpUserPointsMessage pointsMessage = new AmqpUserPointsMessage();
+        pointsMessage.setUserId(userId);
+        pointsMessage.setPoints(3);
+        userPointsPublisher.sendUserPointsForBook(pointsMessage);
     }
 
     private AmqpBookMessage createBookMessage(Book book) {
@@ -139,7 +148,7 @@ public class BookServiceImpl implements BookService {
 
         if (request.getTitle() != null || request.getSynopsis() != null) {
             AmqpBookMessage message = createBookMessage(book);
-            bookPublisher.sendUpdateBookMessage(message);
+            bookPublisher.sendBookMessage(message);
         }
     }
 
