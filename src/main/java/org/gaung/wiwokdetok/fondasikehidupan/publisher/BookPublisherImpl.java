@@ -15,19 +15,10 @@ public class BookPublisherImpl implements BookPublisher {
     }
 
     @Override
-    public void sendNewBookMessage(AmqpBookMessage message) {
+    public void sendBookMessage(AmqpBookMessage message) {
         rabbitTemplate.convertAndSend(
                 AmqpConfig.EXCHANGE_NAME,
                 AmqpConfig.ROUTING_KEY_BOOK_ADDED,
-                message
-        );
-    }
-
-    @Override
-    public void sendUpdateBookMessage(AmqpBookMessage message) {
-        rabbitTemplate.convertAndSend(
-                AmqpConfig.EXCHANGE_NAME,
-                "",
                 message
         );
     }

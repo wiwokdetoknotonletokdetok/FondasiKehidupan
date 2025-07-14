@@ -1,13 +1,11 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
-import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookLocationMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
-import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookLocationPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLocationRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;

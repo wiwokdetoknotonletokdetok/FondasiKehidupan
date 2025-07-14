@@ -2,14 +2,14 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookReviewMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.ReviewResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateReviewRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Review;
 import org.gaung.wiwokdetok.fondasikehidupan.model.ReviewId;
-import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookReviewPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.ReviewRepository;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final BookRepository bookRepository;
 
-    private final BookReviewPublisher bookReviewPublisher;
+    private final UserPointsPublisher userPointsPublisher;
 
     @Override
     public List<ReviewResponseDTO> getReviewsForBook(UUID bookId) {
@@ -56,10 +56,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void sendNewReviewMessage(UUID userId) {
-        AmqpBookReviewMessage message = new AmqpBookReviewMessage();
-        message.setCreatedBy(userId);
+        AmqpUserPointsMessage message = new AmqpUserPointsMessage();
+        message.setUserId(userId);
+        message.setPoints(1);
 
-        bookReviewPublisher.sendNewBookReviewMessage(message);
+        userPointsPublisher.sendUserPointsForReview(message);
     }
 
     private void createNewReview(ReviewId id, Book book, ReviewRequestDTO request) {

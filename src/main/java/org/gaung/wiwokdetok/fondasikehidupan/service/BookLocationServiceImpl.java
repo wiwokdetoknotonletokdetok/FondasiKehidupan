@@ -1,13 +1,13 @@
 package org.gaung.wiwokdetok.fondasikehidupan.service;
 
 import lombok.RequiredArgsConstructor;
-import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookLocationMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookLocationResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookLocationRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
-import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookLocationPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLocationRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.locationtech.jts.geom.Coordinate;
@@ -29,7 +29,7 @@ public class BookLocationServiceImpl implements BookLocationService {
 
     private final BookLocationRepository bookLocationRepository;
 
-    private final BookLocationPublisher bookLocationPublisher;
+    private final UserPointsPublisher userPointsPublisher;
 
     @Override
     public List<BookLocationResponse> getBookLocations(UUID bookId, double latitude, double longitude) {
@@ -64,10 +64,11 @@ public class BookLocationServiceImpl implements BookLocationService {
     }
 
     private void sendNewBookLocationMessage(UUID userId) {
-        AmqpBookLocationMessage message = new AmqpBookLocationMessage();
-        message.setCreatedBy(userId);
+        AmqpUserPointsMessage message = new AmqpUserPointsMessage();
+        message.setUserId(userId);
+        message.setPoints(1);
 
-        bookLocationPublisher.sendNewBookLocationMessage(message);
+        userPointsPublisher.sendUserPointsForLocation(message);
     }
 
     private Point createPoint(double longitude, double latitude) {
