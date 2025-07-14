@@ -18,7 +18,7 @@ public class BookLocationPublisherImpl implements BookLocationPublisher {
     public void sendNewBookLocationMessage(AmqpBookLocationMessage message) {
         rabbitTemplate.convertAndSend(
                 AmqpBookConfig.EXCHANGE_NAME,
-                AmqpBookConfig.ROUTING_KEY_BOOK_LOCATION_ADDED,
+                "",
                 message
         );
     }
