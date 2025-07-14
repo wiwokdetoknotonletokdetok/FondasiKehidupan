@@ -21,7 +21,11 @@ public class BookResponseDTO {
 
     private String synopsis;
 
-    private float rating;
+    private int totalPages;
+
+    private int publishedYear;
+
+    private float totalRatings;
 
     private String bookPicture;
 
@@ -37,6 +41,8 @@ public class BookResponseDTO {
                 book.getIsbn(),
                 book.getTitle(),
                 book.getSynopsis(),
+                book.getTotalPages(),
+                book.getPublishedYear(),
                 getAverageRating(book),
                 book.getBookPicture(),
                 book.getPublisher().getName(),
@@ -51,6 +57,10 @@ public class BookResponseDTO {
         if (totalReviews == 0) {
             return 0.0f;
         }
+
+        System.out.println("Total Ratings: " + book.getTotalRatings());
+        System.out.println("Total Reviews: " + totalReviews);
+        System.out.println("Average Rating: " + (float) book.getTotalRatings() / totalReviews);
 
         return (float) book.getTotalRatings() / totalReviews;
     }

@@ -19,7 +19,7 @@ public class BookSummaryDTO {
 
     private String isbn;
 
-    private float rating;
+    private float totalRatings;
 
     private String bookPicture;
 

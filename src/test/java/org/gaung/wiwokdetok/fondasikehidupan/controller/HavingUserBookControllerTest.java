@@ -144,7 +144,7 @@ public class HavingUserBookControllerTest {
             assertEquals("978-0-306-40615-7", book.getIsbn());
             assertEquals("Publisher Name", book.getPublisherName());
             assertEquals("https://example.com/pic.jpg", book.getBookPicture());
-            assertEquals(4.5f, book.getRating());
+            assertEquals(4.5f, book.getTotalRatings());
             assertNull(response.getErrors());
         });
     }
