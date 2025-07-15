@@ -97,8 +97,11 @@ public class BookPictureControllerTest {
         when(jwtUtil.decodeToken("invalid.token.here"))
                 .thenThrow(new JwtException("Invalid token"));
 
+        MockMultipartFile multipartFile = generateDummyPicture();
+
         mockMvc.perform(
                 multipart("/books/new/book-picture")
+                        .file(multipartFile)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .header("Authorization", "Bearer invalid.token.here")
