@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<WebResponse<?>> handleGenericException(Exception ex) {
-        WebResponse<?> response = WebResponse.builder()
+    public ResponseEntity<WebResponse<Object>> handleGenericException(Exception ex) {
+        WebResponse<Object> response = WebResponse.builder()
                 .errors("Internal Server Error")
                 .build();
 
@@ -27,8 +27,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<WebResponse<?>> handleNotFound(NoHandlerFoundException ex) {
-        WebResponse<?> response = WebResponse.builder()
+    public ResponseEntity<WebResponse<Object>> handleNotFound(NoHandlerFoundException ex) {
+        WebResponse<Object> response = WebResponse.builder()
                 .errors("Not Found")
                 .build();
 
@@ -36,8 +36,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<WebResponse<?>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
-        WebResponse<?> response = WebResponse.builder()
+    public ResponseEntity<WebResponse<Object>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        WebResponse<Object> response = WebResponse.builder()
                 .errors("Method Not Allowed")
                 .build();
 
@@ -45,8 +45,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<WebResponse<?>> handleResponseStatusException(ResponseStatusException ex) {
-        WebResponse<?> response = WebResponse.builder()
+    public ResponseEntity<WebResponse<Object>> handleResponseStatusException(ResponseStatusException ex) {
+        WebResponse<Object> response = WebResponse.builder()
                 .errors(ex.getReason())
                 .build();
 
@@ -54,8 +54,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<WebResponse<?>> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
-        WebResponse<?> response = WebResponse.builder()
+    public ResponseEntity<WebResponse<Object>> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        WebResponse<Object> response = WebResponse.builder()
                 .errors("Missing or unsupported Content-Type")
                 .build();
 
@@ -63,13 +63,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<WebResponse<?>> handleMethodArgNotValid(MethodArgumentNotValidException ex) {
+    public ResponseEntity<WebResponse<Object>> handleMethodArgNotValid(MethodArgumentNotValidException ex) {
         String errors = ex.getBindingResult().getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining("; "));
 
-        WebResponse<?> response = WebResponse.builder()
+        WebResponse<Object> response = WebResponse.builder()
                 .errors(errors)
                 .build();
 
