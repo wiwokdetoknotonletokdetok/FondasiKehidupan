@@ -10,14 +10,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Constraint(validatedBy = AtLeastOneFieldNotNullValidator.class)
-@Target({ElementType.TYPE})
+@Constraint(validatedBy = ImageMinSizeValidator.class)
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AtLeastOneFieldNotNull {
+public @interface ImageMinSize {
 
-    String message() default "At least one field not null";
+    String message() default "Image size is too small";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    int minWidth();
+
+    int minHeight();
 }
