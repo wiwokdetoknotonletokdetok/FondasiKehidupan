@@ -3,7 +3,10 @@ package org.gaung.wiwokdetok.fondasikehidupan.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.lang.reflect.Field;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 
 public class AtLeastOneFieldNotNullValidator implements ConstraintValidator<AtLeastOneFieldNotNull, Object> {
 
@@ -13,15 +16,17 @@ public class AtLeastOneFieldNotNullValidator implements ConstraintValidator<AtLe
             return false;
         }
 
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                Object value = field.get(object);
-                if (value != null) {
-                    return true;
+        try {
+            for (PropertyDescriptor pd : Introspector.getBeanInfo(object.getClass(), Object.class).getPropertyDescriptors()) {
+                if (pd.getReadMethod() != null) {
+                    Object value = pd.getReadMethod().invoke(object);
+                    if (value != null) {
+                        return true;
+                    }
                 }
-            } catch (IllegalAccessException ignored) {
             }
+        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+            return false;
         }
 
         return false;

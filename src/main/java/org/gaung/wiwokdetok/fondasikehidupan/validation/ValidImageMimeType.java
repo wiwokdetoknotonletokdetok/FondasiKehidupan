@@ -10,14 +10,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Constraint(validatedBy = AtLeastOneFieldNotNullValidator.class)
-@Target({ElementType.TYPE})
+@Constraint(validatedBy = ValidImageMimeTypeValidator.class)
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AtLeastOneFieldNotNull {
+public @interface ValidImageMimeType {
 
-    String message() default "At least one field not null";
+    String message() default "File type is not allowed";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    String[] allowedTypes() default {
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+    };
 }
