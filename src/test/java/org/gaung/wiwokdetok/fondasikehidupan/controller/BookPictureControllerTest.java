@@ -8,7 +8,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.security.JwtUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -49,6 +57,45 @@ public class BookPictureControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Autowired
+    private BookLanguageRepository bookLanguageRepository;
+
+    private Book book;
+
+    @BeforeEach
+    void setUp() {
+        Publisher publisher = new Publisher();
+        publisher.setName("publisher");
+        publisherRepository.save(publisher);
+
+        BookLanguage language = new BookLanguage();
+        language.setLanguage("Indonesia");
+        bookLanguageRepository.save(language);
+
+        book = new Book();
+        book.setTitle("Book Title");
+        book.setIsbn("978-0-306-40615-7");
+        book.setSynopsis("Book Synopsis");
+        book.setBookPicture("https://example.com");
+        book.setPublisher(publisher);
+        book.setLanguage(language);
+        book.setCreatedBy(UUID.randomUUID());
+        bookRepository.save(book);
+    }
+
+    @AfterEach
+    void tearDown() {
+        bookRepository.deleteAll();
+        publisherRepository.deleteAll();
+        bookLanguageRepository.deleteAll();
+    }
+
     private MockMultipartFile generateDummyPicture() throws IOException {
         BufferedImage dummyImage = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -76,7 +123,7 @@ public class BookPictureControllerTest {
                 .thenReturn(new PutObjectResult());
 
         mockMvc.perform(
-                multipart("/books/new/book-picture")
+                multipart("/books/{bookId}/book-picture", book.getId())
                         .file(multipartFile)
                         .header("Authorization", "Bearer valid.token.here")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -100,7 +147,7 @@ public class BookPictureControllerTest {
         MockMultipartFile multipartFile = generateDummyPicture();
 
         mockMvc.perform(
-                multipart("/books/new/book-picture")
+                multipart("/books/{bookId}/book-picture", book.getId())
                         .file(multipartFile)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
