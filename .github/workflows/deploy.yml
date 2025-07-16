@@ -32,6 +32,15 @@ jobs:
           DB_HOST=${{ secrets.DB_HOST }}
           DB_PORT=${{ secrets.DB_PORT }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
+          RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
+          CLOUDFLARE_R2_ACCESS_KEY=${{ secrets.CLOUDFLARE_R2_ACCESS_KEY }}
+          CLOUDFLARE_R2_SECRET_KEY=${{ secrets.CLOUDFLARE_R2_SECRET_KEY }}
+          CLOUDFLARE_R2_BUCKET_NAME=${{ secrets.CLOUDFLARE_R2_BUCKET_NAME }}
+          CLOUDFLARE_R2_ENDPOINT=${{ secrets.CLOUDFLARE_R2_ENDPOINT }}
+          CLOUDFLARE_R2_PUBLIC_ENDPOINT=${{ secrets.CLOUDFLARE_R2_PUBLIC_ENDPOINT }}
           EOF
 
       - name: Prepare deploy files

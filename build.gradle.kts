@@ -25,9 +25,12 @@ repositories {
 }
 
 dependencies {
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.118")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation("net.coobird:thumbnailator:0.4.20")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -35,26 +38,23 @@ dependencies {
     implementation("org.locationtech.jts:jts-core:1.19.0")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
 tasks.test {
-    filter {
-        excludeTestsMatching("*FunctionalTest")
-    }
-
-    finalizedBy(tasks.jacocoTestReport)
+    useJUnitPlatform()
 }
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
 }

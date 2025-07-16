@@ -4,23 +4,35 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
-import org.gaung.wiwokdetok.fondasikehidupan.model.BookLocation;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookResponseDTO {
-    private Long id;
+
+    private UUID id;
+
     private String isbn;
+
     private String title;
-    private String description;
-    private float rating;
+
+    private String synopsis;
+
+    private int totalPages;
+
+    private int publishedYear;
+
+    private float totalRatings;
+
     private String bookPicture;
 
     private String publisherName;
+
     private List<String> authorNames;
+
     private List<String> genreNames;
 
     public static BookResponseDTO from(Book book, List<String> authorNames, List<String> genreNames) {
@@ -29,11 +41,27 @@ public class BookResponseDTO {
                 book.getIsbn(),
                 book.getTitle(),
                 book.getSynopsis(),
-                book.getRating(),
+                book.getTotalPages(),
+                book.getPublishedYear(),
+                getAverageRating(book),
                 book.getBookPicture(),
                 book.getPublisher().getName(),
                 authorNames,
                 genreNames
         );
+    }
+
+    public static float getAverageRating(Book book) {
+        int totalReviews = book.getTotalReviews();
+
+        if (totalReviews == 0) {
+            return 0.0f;
+        }
+
+        System.out.println("Total Ratings: " + book.getTotalRatings());
+        System.out.println("Total Reviews: " + totalReviews);
+        System.out.println("Average Rating: " + (float) book.getTotalRatings() / totalReviews);
+
+        return (float) book.getTotalRatings() / totalReviews;
     }
 }

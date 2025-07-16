@@ -22,7 +22,7 @@ public class BookLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "location_name", nullable = false)
     private String locationName;

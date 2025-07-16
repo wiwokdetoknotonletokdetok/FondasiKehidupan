@@ -5,32 +5,43 @@ import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookSummaryDTO;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UpdateBookRequest;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
+import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.BookService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
 
-    @PostMapping
     @AllowedRoles({"USER"})
-    public ResponseEntity<WebResponse<String>> createBook(@Valid @RequestBody BookRequestDTO dto) {
-        bookService.createBook(dto);
+    @PostMapping(
+            path = "/books",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> createBook(
+            @Valid @RequestBody BookRequestDTO dto,
+            @Valid @CurrentUser UserPrincipal user) {
+
+        bookService.createBook(dto, user.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -39,21 +50,41 @@ public class BookController {
                         .build());
     }
 
-    @GetMapping
-    public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getAllBooks() {
-        return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
-                .data(bookService.getAllBooks())
-                .build());
-    }
+    @GetMapping(
+            path = "/books/{bookId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(
+            @PathVariable UUID bookId) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(WebResponse.<BookResponseDTO>builder()
-                .data(bookService.getBookById(id))
+                .data(bookService.getBookById(bookId))
                 .build());
     }
 
-    @GetMapping("/s")
+    @PatchMapping(
+            path = "/books/{bookId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<String>> updateBook(
+            @CurrentUser UserPrincipal user,
+            @Valid @RequestBody UpdateBookRequest request,
+            @PathVariable UUID bookId) {
+
+        bookService.updateBook(bookId, user.getId(), request);
+
+        WebResponse<String> response = WebResponse.<String>builder()
+                .data("OK")
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(
+            path = "/books",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String isbn,
@@ -71,4 +102,3 @@ public class BookController {
                 .build());
     }
 }
-

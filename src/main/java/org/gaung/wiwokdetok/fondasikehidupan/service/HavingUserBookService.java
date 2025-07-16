@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 public interface HavingUserBookService {
-    void addBookToUser(UUID userId, Long bookId);
+
+    void addBookToUser(UUID userId, UUID bookId);
+
     List<BookSummaryDTO> getUserBookCollection(UUID userId);
-    void removeBookFromUserCollection(UUID userId, Long bookId);
+
+    void removeBookFromUserCollection(UUID userId, UUID bookId);
+
     int getTotalBookCollection(UUID userId);
 }
