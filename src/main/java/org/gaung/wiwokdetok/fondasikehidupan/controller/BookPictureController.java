@@ -8,10 +8,12 @@ import org.gaung.wiwokdetok.fondasikehidupan.service.BookPictureService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 public class BookPictureController {
@@ -24,14 +26,15 @@ public class BookPictureController {
 
     @AllowedRoles({"USER"})
     @PostMapping(
-            path = "/books/new/book-picture",
+            path = "/books/{bookId}/book-picture",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> uploadProfilePicture(
+            @PathVariable UUID bookId,
             @Valid @ModelAttribute BookPictureRequest request) {
 
-        String bookPictureUrl = bookPictureService.uploadBookPicture(request.getBookPicture());
+        String bookPictureUrl = bookPictureService.uploadBookPicture(bookId, request.getBookPicture());
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("Created")

@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,13 +30,16 @@ public class BookPictureServiceImpl implements BookPictureService {
 
     private final AmazonS3 amazonS3;
 
-    public BookPictureServiceImpl(AmazonS3 amazonS3) {
+    private final BookRepository bookRepository;
+
+    public BookPictureServiceImpl(AmazonS3 amazonS3, BookRepository bookRepository) {
         this.amazonS3 = amazonS3;
+        this.bookRepository = bookRepository;
     }
 
     @Override
-    public String uploadBookPicture(MultipartFile file) {
-        String fileName = String.format("books/%s.jpg", UUID.randomUUID());
+    public String uploadBookPicture(UUID bookId, MultipartFile file) {
+        String fileName = String.format("books/%s.jpg", bookId);
         String version = String.valueOf(System.currentTimeMillis());
 
         try {
@@ -49,7 +54,11 @@ public class BookPictureServiceImpl implements BookPictureService {
                             .withCannedAcl(CannedAccessControlList.PublicRead)
             );
 
-            return String.format("%s/%s?v=%s", publicEndpoint, fileName, version);
+            String bookPictureUrl = String.format("%s/%s?v=%s", publicEndpoint, fileName, version);
+
+            saveBookPicture(bookId, bookPictureUrl);
+
+            return bookPictureUrl;
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gagal upload book picture");
         }
@@ -65,5 +74,13 @@ public class BookPictureServiceImpl implements BookPictureService {
 
             return new ByteArrayInputStream(outputStream.toByteArray());
         }
+    }
+
+    private void saveBookPicture(UUID bookId, String bookPictureUrl) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
+
+        book.setBookPicture(bookPictureUrl);
+        bookRepository.save(book);
     }
 }
