@@ -28,6 +28,7 @@ public class BookRequestDTO {
     private String synopsis;
 
     @NotBlank(message = "Gambar buku tidak boleh kosong")
+    @Size(max = 255, message = "Gambar buku tidak boleh lebih dari 255 karakter")
     private String bookPicture;
 
     @Min(1)

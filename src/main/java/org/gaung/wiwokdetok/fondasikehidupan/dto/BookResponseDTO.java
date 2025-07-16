@@ -58,10 +58,6 @@ public class BookResponseDTO {
             return 0.0f;
         }
 
-        System.out.println("Total Ratings: " + book.getTotalRatings());
-        System.out.println("Total Reviews: " + totalReviews);
-        System.out.println("Average Rating: " + (float) book.getTotalRatings() / totalReviews);
-
         return (float) book.getTotalRatings() / totalReviews;
     }
 }

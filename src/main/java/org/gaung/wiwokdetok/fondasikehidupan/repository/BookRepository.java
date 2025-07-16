@@ -22,6 +22,7 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
             b.title AS title,
             b.isbn AS isbn,
             b.total_ratings AS rating,
+            b.total_reviews AS totalReviews,
             b.book_picture AS bookPicture,
             p.name AS publisherName,
             a.name AS authorName,

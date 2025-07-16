@@ -18,16 +18,24 @@ public class BookSummaryDTOMapper {
         Map<UUID, BookSummaryDTO> grouped = new LinkedHashMap<>();
 
         for (BookAuthorGenreProjection row : rows) {
-            grouped.computeIfAbsent(row.getBookId(), id -> new BookSummaryDTO(
-                    id,
-                    row.getTitle(),
-                    row.getIsbn(),
-                    row.getRating(),
-                    row.getBookPicture(),
-                    row.getPublisherName(),
-                    new ArrayList<>(),
-                    new ArrayList<>()
-            ));
+            grouped.computeIfAbsent(row.getBookId(), id -> {
+                float averageRating = 0.0f;
+                if (row.getTotalReviews() != null && row.getTotalReviews() > 0) {
+                    averageRating = row.getRating() / row.getTotalReviews();
+                }
+                System.out.println("Total Reviews: " + row.getTotalReviews() + ", Rating: " + row.getRating() + ", Average Rating: " + averageRating);
+                return new BookSummaryDTO(
+                        id,
+                        row.getTitle(),
+                        row.getIsbn(),
+                        averageRating,
+                        row.getBookPicture(),
+                        row.getPublisherName(),
+                        new ArrayList<>(),
+                        new ArrayList<>()
+                );
+            });
+
 
             BookSummaryDTO dto = grouped.get(row.getBookId());
 
