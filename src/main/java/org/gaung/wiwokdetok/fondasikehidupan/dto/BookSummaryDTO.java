@@ -3,7 +3,6 @@ package org.gaung.wiwokdetok.fondasikehidupan.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 
 import java.util.List;
 import java.util.UUID;
