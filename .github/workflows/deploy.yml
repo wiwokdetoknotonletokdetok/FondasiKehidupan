@@ -47,7 +47,7 @@ jobs:
       - name: Prepare deploy files
         run: |
           mkdir fondasikehidupan
-          mv fondasikehidupan.tar .env fondasikehidupan/
+          mv fondasikehidupan.tar .env docker-compose.yml fondasikehidupan/
 
       - name: Copy Docker image to server via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -66,15 +66,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/fondasikehidupan
-
-            docker stop fondasikehidupan || true
-            docker rm fondasikehidupan || true
+            
+            docker-compose down || true
             docker rmi fondasikehidupan:latest || true
 
             docker load -i fondasikehidupan.tar
+            rm kapsulkeaslian.tar
 
-            docker run -d \
-              --name fondasikehidupan \
-              --env-file ~/fondasikehidupan/.env \
-              -p 8081:8080 \
-              fondasikehidupan:latest
+            docker-compose up -d
