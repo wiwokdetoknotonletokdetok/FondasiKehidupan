@@ -72,6 +72,6 @@ jobs:
             docker rmi fondasikehidupan:latest || true
 
             docker load -i fondasikehidupan.tar
-            rm kapsulkeaslian.tar
+            rm fondasikehidupan.tar
 
             docker-compose up -d
