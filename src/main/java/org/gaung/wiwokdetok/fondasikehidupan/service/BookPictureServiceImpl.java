@@ -22,10 +22,10 @@ import java.util.UUID;
 @Service
 public class BookPictureServiceImpl implements BookPictureService {
 
-    @Value("${CLOUDFLARE_R2_BUCKET_NAME}")
+    @Value("${cloudflare.r2.bucket-name}")
     private String bucketName;
 
-    @Value("${CLOUDFLARE_R2_PUBLIC_ENDPOINT}")
+    @Value("${cloudflare.r2.public-endpoint}")
     private String publicEndpoint;
 
     private final AmazonS3 amazonS3;

@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class S3Config {
 
-    @Value("${CLOUDFLARE_R2_ACCESS_KEY}")
+    @Value("${cloudflare.r2.access-key}")
     private String accessKey;
 
-    @Value("${CLOUDFLARE_R2_SECRET_KEY}")
+    @Value("${cloudflare.r2.secret-key}")
     private String secretKey;
 
-    @Value("${CLOUDFLARE_R2_ENDPOINT}")
+    @Value("${cloudflare.r2.endpoint}")
     private String endpoint;
 
     @Bean

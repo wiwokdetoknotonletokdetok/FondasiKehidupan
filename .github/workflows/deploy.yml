@@ -40,7 +40,8 @@ jobs:
           CLOUDFLARE_R2_SECRET_KEY=${{ secrets.CLOUDFLARE_R2_SECRET_KEY }}
           CLOUDFLARE_R2_BUCKET_NAME=${{ secrets.CLOUDFLARE_R2_BUCKET_NAME }}
           CLOUDFLARE_R2_ENDPOINT=${{ secrets.CLOUDFLARE_R2_ENDPOINT }}
-          CLOUDFLARE_R2_PUBLIC_ENDPOINT=${{ secrets.CLOUDFLARE_R2_PUBLIC_ENDPOINT }}
+          CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
+          CORS_ALLOWED_HEADERS=${{ secrets.CORS_ALLOWED_HEADERS }}
           EOF
 
       - name: Prepare deploy files
