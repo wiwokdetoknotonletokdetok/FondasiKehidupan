@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,9 +38,11 @@ public class BookLocationController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookLocationResponse>>> getBookLocations(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
             @PathVariable UUID bookId) {
 
-        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(bookId, -6.3625, 106.8260);
+        List<BookLocationResponse> bookLocations = bookLocationService.getBookLocations(bookId, latitude, longitude);
 
         WebResponse<List<BookLocationResponse>> response = WebResponse.<List<BookLocationResponse>>builder()
                 .data(bookLocations)
