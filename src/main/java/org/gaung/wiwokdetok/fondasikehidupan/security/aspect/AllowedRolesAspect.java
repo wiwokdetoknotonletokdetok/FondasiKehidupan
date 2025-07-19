@@ -24,10 +24,10 @@ import java.util.List;
 @Component
 public class AllowedRolesAspect {
 
-    private final JwtUtil JwtUtil;
+    private final JwtUtil jwtUtil;
 
     public AllowedRolesAspect(JwtUtil jwtUtil) {
-        JwtUtil = jwtUtil;
+        this.jwtUtil = jwtUtil;
     }
 
     @Before("@annotation(org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles)")
@@ -37,14 +37,14 @@ public class AllowedRolesAspect {
         Claims payload;
 
         try {
-            payload = JwtUtil.decodeToken(token);
+            payload = jwtUtil.decodeToken(token);
         } catch (ExpiredJwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token expired");
         } catch (JwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
         }
 
-        String roleFromToken = JwtUtil.getRole(payload);
+        String roleFromToken = jwtUtil.getRole(payload);
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

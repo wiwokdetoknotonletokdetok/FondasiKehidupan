@@ -31,6 +31,8 @@ public class BookResponseDTO {
 
     private String publisherName;
 
+    private String language;
+
     private List<String> authorNames;
 
     private List<String> genreNames;
@@ -46,6 +48,7 @@ public class BookResponseDTO {
                 getAverageRating(book),
                 book.getBookPicture(),
                 book.getPublisher().getName(),
+                book.getLanguage().getLanguage(),
                 authorNames,
                 genreNames
         );
@@ -57,10 +60,6 @@ public class BookResponseDTO {
         if (totalReviews == 0) {
             return 0.0f;
         }
-
-        System.out.println("Total Ratings: " + book.getTotalRatings());
-        System.out.println("Total Reviews: " + totalReviews);
-        System.out.println("Average Rating: " + (float) book.getTotalRatings() / totalReviews);
 
         return (float) book.getTotalRatings() / totalReviews;
     }

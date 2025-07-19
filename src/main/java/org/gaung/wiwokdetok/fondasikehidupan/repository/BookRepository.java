@@ -22,6 +22,7 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
             b.title AS title,
             b.isbn AS isbn,
             b.total_ratings AS rating,
+            b.total_reviews AS totalReviews,
             b.book_picture AS bookPicture,
             p.name AS publisherName,
             a.name AS authorName,
@@ -47,25 +48,15 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     );
 
     @Query(value = """
-        SELECT 
+        SELECT\s
             b.id AS bookId,
-            b.title,
-            b.isbn,
-            b.total_ratings,
-            b.book_picture AS bookPicture,
-            p.name AS publisherName,
-            a.name AS authorName,
-            g.genre AS genreName
-        FROM book b
-        JOIN publisher p ON p.id = b.id_publisher
-        JOIN having_user_book ub ON ub.id_book = b.id
-        JOIN authored_by ab ON ab.id_book = b.id
-        JOIN author a ON a.id = ab.id_author
-        JOIN having_genre hg ON hg.id_book = b.id
-        JOIN genre g ON g.id = hg.id_genre
-        WHERE ub.id_user = :userId
-    """, nativeQuery = true)
-    List<BookAuthorGenreProjection> findUserBooksWithDetails(@Param("userId") UUID userId);
+            b.title AS title,
+            b.bookPicture AS bookPicture
+        FROM HavingUserBook ub
+        JOIN ub.book b
+        WHERE ub.id.idUser = :userId
+    """)
+    List<BookAuthorGenreProjection> findUserBooksWithSummary(@Param("userId") UUID userId);
 
     Optional<Book> findByIsbn(String isbn);
 }

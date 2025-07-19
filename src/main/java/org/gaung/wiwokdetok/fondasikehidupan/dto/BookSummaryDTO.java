@@ -3,7 +3,6 @@ package org.gaung.wiwokdetok.fondasikehidupan.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,15 +16,5 @@ public class BookSummaryDTO {
 
     private String title;
 
-    private String isbn;
-
-    private float totalRatings;
-
     private String bookPicture;
-
-    private String publisherName;
-
-    private List<String> authorNames;
-
-    private List<String> genreNames;
 }

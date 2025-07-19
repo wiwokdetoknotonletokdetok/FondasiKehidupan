@@ -63,7 +63,6 @@ public class HavingUserBookController {
     )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> getUserBookCollection(
             @PathVariable UUID userId) {
-
         List<BookSummaryDTO> books = service.getUserBookCollection(userId);
 
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
