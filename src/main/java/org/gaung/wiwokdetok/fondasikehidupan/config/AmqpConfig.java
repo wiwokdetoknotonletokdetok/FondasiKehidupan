@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmqpConfig {
 
-    public static final String EXCHANGE_NAME = "fondasikehidupan.exchange";
+    public static final String EXCHANGE_NAME = "wiwokdetok.exchange";
 
     public static final String QUEUE_BOOK = "pustakacerdas.book.queue";
 
