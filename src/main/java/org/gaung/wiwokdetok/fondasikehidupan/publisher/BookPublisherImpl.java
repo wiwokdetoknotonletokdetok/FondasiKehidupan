@@ -2,6 +2,7 @@ package org.gaung.wiwokdetok.fondasikehidupan.publisher;
 
 import org.gaung.wiwokdetok.fondasikehidupan.config.AmqpConfig;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,9 @@ public class BookPublisherImpl implements BookPublisher {
         rabbitTemplate.convertAndSend(
                 AmqpConfig.EXCHANGE_NAME,
                 AmqpConfig.ROUTING_KEY_BOOK_CREATED,
-                message
-        );
+                message, msg -> {
+                    msg.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                    return msg;
+                });
     }
 }
