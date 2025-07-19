@@ -88,6 +88,6 @@ public class AmqpConfig {
 
     @Bean
     public Binding bindingUserActivityBookView(Queue userActivityQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(userActivityQueue).to(exchange).with(ROUTING_KEY_USER_ACTIVITY_BOOK_VIEW);
+        return bindQueue(userActivityQueue, exchange, ROUTING_KEY_USER_ACTIVITY_BOOK_VIEW);
     }
 }

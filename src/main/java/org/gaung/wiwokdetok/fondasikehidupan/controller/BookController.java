@@ -55,10 +55,11 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<BookResponseDTO>> getBookById(
+            @CurrentUser UserPrincipal user,
             @PathVariable UUID bookId) {
 
         return ResponseEntity.ok(WebResponse.<BookResponseDTO>builder()
-                .data(bookService.getBookById(bookId, bookId))
+                .data(bookService.getBookById(bookId, user.getId()))
                 .build());
     }
 
