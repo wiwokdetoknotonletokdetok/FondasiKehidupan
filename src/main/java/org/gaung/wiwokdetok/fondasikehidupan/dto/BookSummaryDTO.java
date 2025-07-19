@@ -16,15 +16,5 @@ public class BookSummaryDTO {
 
     private String title;
 
-    private String isbn;
-
-    private float totalRatings;
-
     private String bookPicture;
-
-    private String publisherName;
-
-    private List<String> authorNames;
-
-    private List<String> genreNames;
 }

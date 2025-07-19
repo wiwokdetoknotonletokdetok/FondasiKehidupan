@@ -46,6 +46,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -101,15 +102,15 @@ public class BookControllerTest {
         authorRepository.save(author);
 
         genre = new Genre();
-        genre.setGenre("genre 1");
+        genre.setGenreName("genre 1");
         genreRepository.save(genre);
 
         genre2 = new Genre();
-        genre2.setGenre("genre 2");
+        genre2.setGenreName("genre 2");
         genreRepository.save(genre2);
 
         genre3 = new Genre();
-        genre3.setGenre("genre 3");
+        genre3.setGenreName("genre 3");
         genreRepository.save(genre3);
 
         publisher = new Publisher();
@@ -251,6 +252,78 @@ public class BookControllerTest {
 
             assertNull(response.getData());
             assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testCreateBookSuccess_withNullPicture_shouldSetDefault() throws Exception {
+        Claims payload = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
+        when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
+        when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        BookRequestDTO bookRequest = new BookRequestDTO();
+        bookRequest.setTitle("Book Title");
+        bookRequest.setIsbn("978-3-16-148410-1");
+        bookRequest.setSynopsis("Book Synopsis");
+        bookRequest.setBookPicture(null);
+        bookRequest.setTotalPages(100);
+        bookRequest.setLanguage("Indonesia");
+        bookRequest.setPublishedYear(2020);
+        bookRequest.setPublisherName(publisher.getName());
+        bookRequest.setAuthorNames(List.of(author.getName()));
+        bookRequest.setGenreIds(List.of(genre.getId()));
+
+        mockMvc.perform(
+                post("/books")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest))
+                        .header("Authorization", "Bearer valid.token.here")
+        ).andExpect(
+                status().isCreated()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getData());
+            assertNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void createBook_shouldUseProvidedPicture_whenPictureIsNotBlank() throws Exception {
+        Claims payload = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
+        when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
+        when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        BookRequestDTO bookRequest = new BookRequestDTO();
+        bookRequest.setTitle("Book Title");
+        bookRequest.setIsbn("978-3-16-148410-2");
+        bookRequest.setSynopsis("Book Synopsis");
+        bookRequest.setBookPicture("");
+        bookRequest.setTotalPages(100);
+        bookRequest.setLanguage("Indonesia");
+        bookRequest.setPublishedYear(2020);
+        bookRequest.setPublisherName(publisher.getName());
+        bookRequest.setAuthorNames(List.of(author.getName()));
+        bookRequest.setGenreIds(List.of(genre.getId()));
+
+        mockMvc.perform(
+                post("/books")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest))
+                        .header("Authorization", "Bearer valid.token.here")
+        ).andExpect(
+                status().isCreated()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getData());
+            assertNull(response.getErrors());
         });
     }
 
@@ -741,8 +814,8 @@ public class BookControllerTest {
             assertNull(response.getErrors());
 
             assertEquals(updatedGenreIds.size(), response.getData().getGenreNames().size());
-            assertEquals(genre2.getGenre(), response.getData().getGenreNames().getFirst());
-            assertEquals(genre3.getGenre(), response.getData().getGenreNames().getLast());
+            assertEquals(genre2.getGenreName(), response.getData().getGenreNames().getFirst());
+            assertEquals(genre3.getGenreName(), response.getData().getGenreNames().getLast());
         });
     }
 
@@ -774,5 +847,46 @@ public class BookControllerTest {
             assertNull(response.getData());
             assertNotNull(response.getErrors());
         });
+    }
+
+    @Test
+    void testUpdateBookFailed_updateNotExistBook() throws Exception {
+        Claims payload = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token.here")).thenReturn(payload);
+        when(jwtUtil.getId(payload)).thenReturn(UUID.randomUUID());
+        when(jwtUtil.getRole(payload)).thenReturn("USER");
+
+        doNothing().when(bookPublisher).sendBookMessage(any(AmqpBookMessage.class));
+
+        List<Integer> updatedGenreIds = List.of(10214);
+        UpdateBookRequest bookRequest = new UpdateBookRequest();
+        bookRequest.setGenreIds(updatedGenreIds);
+
+        UUID nonExistentBookId = UUID.randomUUID();
+
+        mockMvc.perform(
+                patch("/books/{bookId}", nonExistentBookId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest))
+                        .header("Authorization", "Bearer valid.token.here")
+        ).andExpect(status().isNotFound())
+        .andDo(result -> {
+            WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void advancedSearch_shouldReturnEmpty_whenNoMatch() throws Exception {
+        mockMvc.perform(get("/books")
+                        .param("title", "Tidak Ada Judul")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(0));
     }
 }

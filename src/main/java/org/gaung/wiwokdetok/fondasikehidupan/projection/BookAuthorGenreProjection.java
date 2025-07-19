@@ -5,11 +5,5 @@ import java.util.UUID;
 public interface BookAuthorGenreProjection {
     UUID getBookId();
     String getTitle();
-    String getIsbn();
-    Float getRating();
-    Integer getTotalReviews();
     String getBookPicture();
-    String getPublisherName();
-    String getAuthorName();
-    String getGenreName();
 }

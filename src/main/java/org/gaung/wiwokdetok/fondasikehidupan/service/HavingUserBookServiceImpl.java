@@ -24,15 +24,17 @@ public class HavingUserBookServiceImpl implements HavingUserBookService {
 
     private final BookRepository bookRepository;
 
+    private final BookSummaryDTOMapper bookSummaryDTOMapper;
+
     @Override
     public void addBookToUser(UUID userId, UUID bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku tidak ditemukan"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
         HavingUserBookId id = new HavingUserBookId(userId, bookId);
 
         if (repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Buku sudah ada dalam koleksi user ini.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Buku sudah ada dalam koleksi user ini.");
         }
 
         HavingUserBook userBook = new HavingUserBook(userId, book);
@@ -41,15 +43,16 @@ public class HavingUserBookServiceImpl implements HavingUserBookService {
 
     @Override
     public List<BookSummaryDTO> getUserBookCollection(UUID userId) {
-        List<BookAuthorGenreProjection> rows = bookRepository.findUserBooksWithDetails(userId);
-        return BookSummaryDTOMapper.groupFromProjections(rows);
+        System.out.println("TESTJKANJKNS");
+        List<BookAuthorGenreProjection> rows = bookRepository.findUserBooksWithSummary(userId);
+        return bookSummaryDTOMapper.groupFromProjections(rows);
     }
 
     @Override
     public void removeBookFromUserCollection(UUID userId, UUID bookId) {
         HavingUserBookId id = new HavingUserBookId(userId, bookId);
         if (!repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku tidak ada dalam koleksi user ini.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ada dalam koleksi user ini.");
         }
         repository.deleteById(id);
     }
