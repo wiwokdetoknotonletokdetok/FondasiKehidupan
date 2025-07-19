@@ -25,4 +25,15 @@ public class BookPublisherImpl implements BookPublisher {
                     return msg;
                 });
     }
+
+    @Override
+    public void sendBookPictureAddedMessage(AmqpBookMessage message) {
+        rabbitTemplate.convertAndSend(
+                AmqpConfig.EXCHANGE_NAME,
+                AmqpConfig.ROUTING_KEY_BOOK_PICTURE_ADDED,
+                message, msg -> {
+                    msg.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                    return msg;
+                });
+    }
 }

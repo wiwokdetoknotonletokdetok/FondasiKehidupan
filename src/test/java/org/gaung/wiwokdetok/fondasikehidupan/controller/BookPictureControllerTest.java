@@ -7,10 +7,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
 import org.gaung.wiwokdetok.fondasikehidupan.model.BookLanguage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
@@ -35,6 +37,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -53,6 +56,9 @@ public class BookPictureControllerTest {
 
     @MockBean
     private AmazonS3 amazonS3;
+
+    @MockBean
+    private BookPublisher bookPublisher;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -118,6 +124,8 @@ public class BookPictureControllerTest {
         when(jwtUtil.getRole(payload)).thenReturn("USER");
 
         MockMultipartFile multipartFile = generateDummyPicture();
+
+        doNothing().when(bookPublisher).sendBookPictureAddedMessage(any(AmqpBookMessage.class));
 
         when(amazonS3.putObject(any(PutObjectRequest.class)))
                 .thenReturn(new PutObjectResult());

@@ -23,6 +23,8 @@ public class AmqpConfig {
 
     public static final String ROUTING_KEY_BOOK_CREATED = "book.created";
 
+    public static final String ROUTING_KEY_BOOK_PICTURE_ADDED = "book.picture.added";
+
     public static final String ROUTING_KEY_USER_POINTS_BOOK = "user.points.book";
 
     public static final String ROUTING_KEY_USER_POINTS_LOCATION = "user.points.location";

@@ -5,4 +5,6 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 public interface BookPublisher {
 
     void sendBookCreatedMessage(AmqpBookMessage message);
+
+    void sendBookPictureAddedMessage(AmqpBookMessage message);
 }

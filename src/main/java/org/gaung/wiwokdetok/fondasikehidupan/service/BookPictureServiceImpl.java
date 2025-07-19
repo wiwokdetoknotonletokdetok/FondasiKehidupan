@@ -4,9 +4,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class BookPictureServiceImpl implements BookPictureService {
 
     @Value("${cloudflare.r2.bucket-name}")
@@ -32,10 +36,7 @@ public class BookPictureServiceImpl implements BookPictureService {
 
     private final BookRepository bookRepository;
 
-    public BookPictureServiceImpl(AmazonS3 amazonS3, BookRepository bookRepository) {
-        this.amazonS3 = amazonS3;
-        this.bookRepository = bookRepository;
-    }
+    private final BookPublisher bookPublisher;
 
     @Override
     public String uploadBookPicture(UUID bookId, MultipartFile file) {
@@ -81,6 +82,17 @@ public class BookPictureServiceImpl implements BookPictureService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
         book.setBookPicture(bookPictureUrl);
+        sendBookPictureAddedMessage(book);
         bookRepository.save(book);
+    }
+
+    private void sendBookPictureAddedMessage(Book book) {
+        AmqpBookMessage message = new AmqpBookMessage();
+        message.setId(book.getId());
+        message.setTitle(book.getTitle());
+        message.setSynopsis(book.getSynopsis());
+        message.setBookPicture(book.getBookPicture());
+        message.setCreatedBy(book.getCreatedBy());
+        bookPublisher.sendBookPictureAddedMessage(message);
     }
 }
