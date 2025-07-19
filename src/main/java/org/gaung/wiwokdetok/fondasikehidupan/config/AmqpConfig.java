@@ -67,8 +67,13 @@ public class AmqpConfig {
     }
 
     @Bean
-    public Binding bindingBookQueue(Queue bookQueue, TopicExchange exchange) {
+    public Binding bindingBookCreated(Queue bookQueue, TopicExchange exchange) {
         return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_CREATED);
+    }
+
+    @Bean
+    public Binding bindingBookPictureAdded(Queue bookQueue, TopicExchange exchange) {
+        return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_PICTURE_ADDED);
     }
 
     @Bean
