@@ -3,6 +3,7 @@ package org.gaung.wiwokdetok.fondasikehidupan.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpBookMessage;
+import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserBookViewMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.AmqpUserPointsMessage;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookRequestDTO;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.BookResponseDTO;
@@ -16,6 +17,7 @@ import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Publisher;
 import org.gaung.wiwokdetok.fondasikehidupan.projection.BookAuthorGenreProjection;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.BookPublisher;
+import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserActivityPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.publisher.UserPointsPublisher;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.AuthorRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
@@ -50,6 +52,8 @@ public class BookServiceImpl implements BookService {
     private final UserPointsPublisher userPointsPublisher;
 
     private final BookSummaryDTOMapper bookSummaryDTOMapper;
+
+    private final UserActivityPublisher userActivityPublisher;
 
     @Override
     @Transactional
@@ -86,7 +90,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
 
         AmqpBookMessage message = createBookMessage(book);
-        bookPublisher.sendBookMessage(message);
+        bookPublisher.sendBookCreatedMessage(message);
 
         AmqpUserPointsMessage pointsMessage = new AmqpUserPointsMessage();
         pointsMessage.setUserId(userId);
@@ -106,12 +110,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookResponseDTO getBookById(UUID idBook) {
-        Book book = bookRepository.findById(idBook)
+    public BookResponseDTO getBookById(UUID bookId, UUID userId) {
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
-        List<String> authorNames = authorRepository.findAllNamesByBookId(idBook);
-        List<String> genreNames = genreRepository.findAllNamesByBookId(idBook);
+        List<String> authorNames = authorRepository.findAllNamesByBookId(bookId);
+        List<String> genreNames = genreRepository.findAllNamesByBookId(bookId);
+
+        if (userId != null) {
+            AmqpUserBookViewMessage message = new AmqpUserBookViewMessage(userId, bookId);
+            userActivityPublisher.sendUserBookViewMessage(message);
+        }
 
         return BookResponseDTO.from(book, authorNames, genreNames);
     }
@@ -123,7 +132,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void updateBook(UUID bookId, UUID stringId, UpdateBookRequest request) {
+    public void updateBook(UUID bookId, UpdateBookRequest request) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
@@ -155,7 +164,7 @@ public class BookServiceImpl implements BookService {
 
         if (request.getTitle() != null || request.getSynopsis() != null) {
             AmqpBookMessage message = createBookMessage(book);
-            bookPublisher.sendBookMessage(message);
+            bookPublisher.sendBookCreatedMessage(message);
         }
     }
 

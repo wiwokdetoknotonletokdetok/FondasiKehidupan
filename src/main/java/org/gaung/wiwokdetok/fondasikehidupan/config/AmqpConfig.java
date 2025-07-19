@@ -16,15 +16,19 @@ public class AmqpConfig {
 
     public static final String QUEUE_BOOK = "pustakacerdas.book.queue";
 
-    public static final String QUEUE_USER_POINTS = "kapsulkeaslian.points.queue";
+    public static final String QUEUE_USER_ACTIVITY = "pustakacerdas.user.activity.queue";
 
-    public static final String ROUTING_KEY_BOOK_ADDED = "book.added";
+    public static final String QUEUE_USER_POINTS = "kapsulkeaslian.user.points.queue";
+
+    public static final String ROUTING_KEY_BOOK_CREATED = "book.created";
 
     public static final String ROUTING_KEY_USER_POINTS_BOOK = "user.points.book";
 
     public static final String ROUTING_KEY_USER_POINTS_LOCATION = "user.points.location";
 
     public static final String ROUTING_KEY_USER_POINTS_REVIEW = "user.points.review";
+
+    public static final String ROUTING_KEY_USER_ACTIVITY_BOOK_VIEW = "user.activity.book.view";
 
     private Queue createQueue(String name) {
         return QueueBuilder.durable(name).build();
@@ -55,8 +59,13 @@ public class AmqpConfig {
     }
 
     @Bean
+    public Queue userActivityQueue() {
+        return createQueue(QUEUE_USER_ACTIVITY);
+    }
+
+    @Bean
     public Binding bindingBookQueue(Queue bookQueue, TopicExchange exchange) {
-        return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_ADDED);
+        return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_CREATED);
     }
 
     @Bean
@@ -72,5 +81,10 @@ public class AmqpConfig {
     @Bean
     public Binding bindingUserPointsReview(Queue userPointsQueue, TopicExchange exchange) {
         return bindQueue(userPointsQueue, exchange, ROUTING_KEY_USER_POINTS_REVIEW);
+    }
+
+    @Bean
+    public Binding bindingUserActivityBookView(Queue userActivityQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(userActivityQueue).to(exchange).with(ROUTING_KEY_USER_ACTIVITY_BOOK_VIEW);
     }
 }

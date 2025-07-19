@@ -1,21 +1,18 @@
 package org.gaung.wiwokdetok.fondasikehidupan.security.resolver;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.gaung.wiwokdetok.fondasikehidupan.dto.UserPrincipal;
 import org.gaung.wiwokdetok.fondasikehidupan.security.JwtUtil;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -44,7 +41,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
         String token = request.getHeader("Authorization");
 
         if (token == null || !token.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid token");
+            return new UserPrincipal(null, "GUEST");
         }
 
         token = token.substring(7);
@@ -53,10 +50,8 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 
         try {
             payload = jwtUtil.decodeToken(token);
-        } catch (ExpiredJwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token expired");
         } catch (JwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+            return new UserPrincipal(null, "GUEST");
         }
 
         UUID userId = jwtUtil.getId(payload);

@@ -58,7 +58,7 @@ public class BookController {
             @PathVariable UUID bookId) {
 
         return ResponseEntity.ok(WebResponse.<BookResponseDTO>builder()
-                .data(bookService.getBookById(bookId))
+                .data(bookService.getBookById(bookId, bookId))
                 .build());
     }
 
@@ -68,11 +68,10 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<String>> updateBook(
-            @CurrentUser UserPrincipal user,
             @Valid @RequestBody UpdateBookRequest request,
             @PathVariable UUID bookId) {
 
-        bookService.updateBook(bookId, user.getId(), request);
+        bookService.updateBook(bookId, request);
 
         WebResponse<String> response = WebResponse.<String>builder()
                 .data("OK")
