@@ -178,6 +178,35 @@ public class ReviewControllerTest {
     }
 
     @Test
+    void testUpdateReviewFail_SomeoneNotAuthorized() throws Exception {
+        UUID otherUser = UUID.randomUUID();
+
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token")).thenReturn(claims);
+        when(jwtUtil.getId(claims)).thenReturn(userId2);
+        when(jwtUtil.getRole(claims)).thenReturn("USER");
+
+        UpdateReviewRequestDTO request = new UpdateReviewRequestDTO();
+        request.setMessage("Mantap");
+        request.setRating(5);
+
+        mockMvc.perform(
+                patch("/books/{bookId}/reviews/{userId}", book.getId(), otherUser)
+                        .header("Authorization", "Bearer valid.token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isForbidden()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
     void testGetReviewsForBookSuccessWithoutAuth() throws Exception {
         mockMvc.perform(
                 get("/books/{bookId}/reviews", book.getId())
@@ -214,6 +243,27 @@ public class ReviewControllerTest {
         });
     }
 
+    @Test
+    void testDeleteReview_ReviewNotFound() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token")).thenReturn(claims);
+        when(jwtUtil.getId(claims)).thenReturn(userId2);
+        when(jwtUtil.getRole(claims)).thenReturn("USER");
+
+        UUID fakeBookId = UUID.randomUUID();
+
+        mockMvc.perform(
+                delete("/books/{bookId}/reviews/{userId}", fakeBookId, userId2)
+                        .header("Authorization", "Bearer valid.token")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isNotFound()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
 
     @Test
     void testUnauthorizedAccessSubmitReview() throws Exception {
@@ -234,6 +284,75 @@ public class ReviewControllerTest {
         ).andDo(result -> {
             WebResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
             });
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testSubmitReview_BookNotFound() throws Exception {
+        UUID bookId = UUID.randomUUID();
+
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token")).thenReturn(claims);
+        when(jwtUtil.getId(claims)).thenReturn(userId1);
+        when(jwtUtil.getRole(claims)).thenReturn("USER");
+
+        doNothing().when(userPointsPublisher).sendUserPointsForReview(any(AmqpUserPointsMessage.class));
+
+        ReviewRequestDTO request = new ReviewRequestDTO();
+        request.setMessage("Mantap");
+        request.setRating(5);
+
+        mockMvc.perform(
+                post("/books/{bookId}/reviews", bookId)
+                        .header("Authorization", "Bearer valid.token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isNotFound()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getData());
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testSubmitReview_AlreadyExists() throws Exception {
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.decodeToken("valid.token")).thenReturn(claims);
+        when(jwtUtil.getId(claims)).thenReturn(userId1);
+        when(jwtUtil.getRole(claims)).thenReturn("USER");
+
+        doNothing().when(userPointsPublisher).sendUserPointsForReview(any(AmqpUserPointsMessage.class));
+
+        ReviewRequestDTO request1 = new ReviewRequestDTO();
+        request1.setMessage("Mantap");
+        request1.setRating(4);
+
+        ReviewRequestDTO request2 = new ReviewRequestDTO();
+        request2.setMessage("Second");
+        request2.setRating(4);
+
+        mockMvc.perform(post("/books/" + book.getId() + "/reviews")
+                        .header("Authorization", "Bearer valid.token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request1)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(
+                post("/books/{bookId}/reviews", book.getId())
+                        .header("Authorization", "Bearer valid.token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request2))
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isBadRequest()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
             assertNull(response.getData());
             assertNotNull(response.getErrors());
         });
