@@ -12,15 +12,11 @@ import java.util.UUID;
 @Repository
 public interface GenreRepository extends JpaRepository<Genre, Integer> {
 
-    @Query("""
-        SELECT g FROM Genre g
-        JOIN HavingGenre hg ON g.id = hg.genre.id
-        WHERE hg.book.id = :bookId
-    """)
-    List<Genre> findAllByBookId(@Param("bookId") UUID bookId);
+    @Query("SELECT g.genreName FROM Genre g")
+    List<String> findAllGenreNames();
 
     @Query("""
-        SELECT g.genre FROM Genre g
+        SELECT g.genreName FROM Genre g
         JOIN HavingGenre hg ON g.id = hg.genre.id
         WHERE hg.book.id = :bookId
     """)
