@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
@@ -49,6 +49,8 @@ public class BookServiceImpl implements BookService {
 
     private final UserPointsPublisher userPointsPublisher;
 
+    private final BookSummaryDTOMapper bookSummaryDTOMapper;
+
     @Override
     @Transactional
     public void createBook(BookRequestDTO dto, UUID userId) {
@@ -64,11 +66,16 @@ public class BookServiceImpl implements BookService {
 
         List<Genre> genres = handleBookGenres(dto.getGenreIds());
 
+        String picture = dto.getBookPicture();
+        if (picture == null || picture.isBlank()) {
+            picture = "https://placehold.co/300x450?text=Book";
+        }
+
         Book book = new Book();
         book.setIsbn(dto.getIsbn());
         book.setSynopsis(dto.getSynopsis());
         book.setTitle(dto.getTitle());
-        book.setBookPicture(dto.getBookPicture());
+        book.setBookPicture(picture);
         book.setTotalPages(dto.getTotalPages());
         book.setPublishedYear(dto.getPublishedYear());
         book.setLanguage(language);
@@ -112,7 +119,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
         List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
-        return BookSummaryDTOMapper.groupFromProjections(rows);
+        return bookSummaryDTOMapper.groupFromProjections(rows);
     }
 
     @Override
@@ -240,10 +247,8 @@ public class BookServiceImpl implements BookService {
     }
 
     private void validateIsbnChange(Book book, String newIsbn) {
-        if (!book.getIsbn().equals(newIsbn)) {
-            if (bookRepository.findByIsbn(newIsbn).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku dengan ISBN tersebut sudah ada");
-            }
+        if (!book.getIsbn().equals(newIsbn) && bookRepository.findByIsbn(newIsbn).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Buku dengan ISBN tersebut sudah ada");
         }
     }
 }
