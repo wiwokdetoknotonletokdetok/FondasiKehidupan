@@ -114,15 +114,18 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Buku tidak ditemukan"));
 
-        List<String> authorNames = authorRepository.findAllNamesByBookId(bookId);
-        List<String> genreNames = genreRepository.findAllNamesByBookId(bookId);
+        List<String> authorNames = new ArrayList<>();
+
+        for (Author author : book.getAuthors()) {
+            authorNames.add(author.getName());
+        }
 
         if (userId != null) {
             AmqpUserBookViewMessage message = new AmqpUserBookViewMessage(userId, bookId);
             userActivityPublisher.sendUserBookViewMessage(message);
         }
 
-        return BookResponseDTO.from(book, authorNames, genreNames);
+        return BookResponseDTO.from(book, authorNames, book.getGenres());
     }
 
     @Override

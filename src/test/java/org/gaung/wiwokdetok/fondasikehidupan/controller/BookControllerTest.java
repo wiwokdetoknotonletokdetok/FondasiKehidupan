@@ -820,9 +820,9 @@ public class BookControllerTest {
             assertNotNull(response.getData());
             assertNull(response.getErrors());
 
-            assertEquals(updatedGenreIds.size(), response.getData().getGenreNames().size());
-            assertEquals(genre2.getGenreName(), response.getData().getGenreNames().getFirst());
-            assertEquals(genre3.getGenreName(), response.getData().getGenreNames().getLast());
+            assertEquals(updatedGenreIds.size(), response.getData().getGenres().size());
+            assertEquals(genre2.getGenreName(), response.getData().getGenres().getFirst().getGenreName());
+            assertEquals(genre3.getGenreName(), response.getData().getGenres().getLast().getGenreName());
         });
     }
 

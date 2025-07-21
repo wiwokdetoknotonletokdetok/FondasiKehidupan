@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.gaung.wiwokdetok.fondasikehidupan.model.Book;
+import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +36,9 @@ public class BookResponseDTO {
 
     private List<String> authorNames;
 
-    private List<String> genreNames;
+    private List<Genre> genres;
 
-    public static BookResponseDTO from(Book book, List<String> authorNames, List<String> genreNames) {
+    public static BookResponseDTO from(Book book, List<String> authorNames, List<Genre> genres) {
         return new BookResponseDTO(
                 book.getId(),
                 book.getIsbn(),
@@ -50,7 +51,7 @@ public class BookResponseDTO {
                 book.getPublisher().getName(),
                 book.getLanguage().getLanguage(),
                 authorNames,
-                genreNames
+                genres
         );
     }
 
