@@ -131,14 +131,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
         List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
-        System.out.println();
-        System.out.println("Banyak roe: " + rows.toArray().length);
-        for (BookAuthorGenreProjection p : rows) {
-            System.out.println("Projection: bookId=" + p.getBookId() + ", title=" + p.getTitle() + ", picture=" + p.getBookPicture());
-        }
-        System.out.println("Hasil search searvice: " + rows);
         List<BookSummaryDTO> res = bookSummaryDTOMapper.groupFromProjections(rows);
-        System.out.println("Hasil: " + res);
         return res;
     }
 

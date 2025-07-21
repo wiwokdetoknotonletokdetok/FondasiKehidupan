@@ -28,6 +28,8 @@ public class BookResponseDTO {
 
     private float totalRatings;
 
+    private float totalReviews;
+
     private String bookPicture;
 
     private String publisherName;
@@ -47,6 +49,7 @@ public class BookResponseDTO {
                 book.getTotalPages(),
                 book.getPublishedYear(),
                 getAverageRating(book),
+                book.getTotalReviews(),
                 book.getBookPicture(),
                 book.getPublisher().getName(),
                 book.getLanguage().getLanguage(),
