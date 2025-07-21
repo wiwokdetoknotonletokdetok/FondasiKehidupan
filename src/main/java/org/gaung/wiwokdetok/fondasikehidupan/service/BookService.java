@@ -12,9 +12,9 @@ public interface BookService {
 
     void createBook(BookRequestDTO dto, UUID userId);
 
-    BookResponseDTO getBookById(UUID idBook);
+    BookResponseDTO getBookById(UUID bookId, UUID userId);
 
     List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher);
 
-    void updateBook(UUID bookId, UUID userId, UpdateBookRequest request);
+    void updateBook(UUID bookId, UpdateBookRequest request);
 }

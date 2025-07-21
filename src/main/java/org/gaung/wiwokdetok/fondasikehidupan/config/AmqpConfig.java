@@ -2,6 +2,7 @@ package org.gaung.wiwokdetok.fondasikehidupan.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
@@ -16,15 +17,21 @@ public class AmqpConfig {
 
     public static final String QUEUE_BOOK = "pustakacerdas.book.queue";
 
-    public static final String QUEUE_USER_POINTS = "kapsulkeaslian.points.queue";
+    public static final String QUEUE_USER_ACTIVITY = "pustakacerdas.user.activity.queue";
 
-    public static final String ROUTING_KEY_BOOK_ADDED = "book.added";
+    public static final String QUEUE_USER_POINTS = "kapsulkeaslian.user.points.queue";
+
+    public static final String ROUTING_KEY_BOOK_CREATED = "book.created";
+
+    public static final String ROUTING_KEY_BOOK_PICTURE_ADDED = "book.picture.added";
 
     public static final String ROUTING_KEY_USER_POINTS_BOOK = "user.points.book";
 
     public static final String ROUTING_KEY_USER_POINTS_LOCATION = "user.points.location";
 
     public static final String ROUTING_KEY_USER_POINTS_REVIEW = "user.points.review";
+
+    public static final String ROUTING_KEY_USER_ACTIVITY_BOOK_VIEW = "user.activity.book.view";
 
     private Queue createQueue(String name) {
         return QueueBuilder.durable(name).build();
@@ -41,7 +48,7 @@ public class AmqpConfig {
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE_NAME);
+        return ExchangeBuilder.topicExchange(EXCHANGE_NAME).durable(true).build();
     }
 
     @Bean
@@ -55,8 +62,18 @@ public class AmqpConfig {
     }
 
     @Bean
-    public Binding bindingBookQueue(Queue bookQueue, TopicExchange exchange) {
-        return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_ADDED);
+    public Queue userActivityQueue() {
+        return createQueue(QUEUE_USER_ACTIVITY);
+    }
+
+    @Bean
+    public Binding bindingBookCreated(Queue bookQueue, TopicExchange exchange) {
+        return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_CREATED);
+    }
+
+    @Bean
+    public Binding bindingBookPictureAdded(Queue bookQueue, TopicExchange exchange) {
+        return bindQueue(bookQueue, exchange, ROUTING_KEY_BOOK_PICTURE_ADDED);
     }
 
     @Bean
@@ -72,5 +89,10 @@ public class AmqpConfig {
     @Bean
     public Binding bindingUserPointsReview(Queue userPointsQueue, TopicExchange exchange) {
         return bindQueue(userPointsQueue, exchange, ROUTING_KEY_USER_POINTS_REVIEW);
+    }
+
+    @Bean
+    public Binding bindingUserActivityBookView(Queue userActivityQueue, TopicExchange exchange) {
+        return bindQueue(userActivityQueue, exchange, ROUTING_KEY_USER_ACTIVITY_BOOK_VIEW);
     }
 }
