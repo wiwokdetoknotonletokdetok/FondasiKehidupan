@@ -889,4 +889,20 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.length()").value(0));
     }
+
+    @Test
+    void testAdvancedSearch_success_withEmptyParams_shouldIgnore() throws Exception {
+        mockMvc.perform(get("/books")
+                        .param("title", "")
+                        .param("isbn", "")
+                        .param("author", "")
+                        .param("genre", "")
+                        .param("publisher", "")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.data").isArray()
+        ).andExpect(jsonPath("$.errors").doesNotExist()
+        );
+    }
+
 }

@@ -43,7 +43,6 @@ public class HavingUserBookServiceImpl implements HavingUserBookService {
 
     @Override
     public List<BookSummaryDTO> getUserBookCollection(UUID userId) {
-        System.out.println("TESTJKANJKNS");
         List<BookAuthorGenreProjection> rows = bookRepository.findUserBooksWithSummary(userId);
         return bookSummaryDTOMapper.groupFromProjections(rows);
     }
