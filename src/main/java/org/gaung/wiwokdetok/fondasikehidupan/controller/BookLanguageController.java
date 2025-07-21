@@ -1,8 +1,7 @@
 package org.gaung.wiwokdetok.fondasikehidupan.controller;
 
 import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
-import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
-import org.gaung.wiwokdetok.fondasikehidupan.service.GenreService;
+import org.gaung.wiwokdetok.fondasikehidupan.service.BookLanguageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,28 +11,28 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class GenreController {
+public class BookLanguageController {
 
-    private final GenreService genreService;
+    private final BookLanguageService bookLanguageService;
 
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
+    public BookLanguageController(BookLanguageService bookLanguageService) {
+        this.bookLanguageService = bookLanguageService;
     }
 
     @GetMapping(
-            path = "/genres",
+            path = "/languages",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<List<Genre>>> getAllGenres(
+    public ResponseEntity<WebResponse<List<String>>> getBookLanguages(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Integer limit) {
 
         int effectiveLimit = (limit == null || limit <= 0) ? 5 : limit;
 
-        List<Genre> genreList = genreService.searchGenres(q, effectiveLimit);
+        List<String> bookLanguageList = bookLanguageService.searchBookLanguages(q, effectiveLimit);
 
-        WebResponse<List<Genre>> response = WebResponse.<List<Genre>>builder()
-                .data(genreList)
+        WebResponse<List<String>> response = WebResponse.<List<String>>builder()
+                .data(bookLanguageList)
                 .build();
 
         return ResponseEntity.ok(response);

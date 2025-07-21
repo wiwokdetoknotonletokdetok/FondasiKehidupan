@@ -1,5 +1,6 @@
 package org.gaung.wiwokdetok.fondasikehidupan.controller;
 
+import org.gaung.wiwokdetok.fondasikehidupan.model.Genre;
 import org.gaung.wiwokdetok.fondasikehidupan.service.GenreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,22 +27,22 @@ public class GenreControllerTest {
     @MockBean
     private GenreService genreService;
 
-    private List<String> mockGenres;
+    private List<Genre> mockGenres;
 
     @BeforeEach
     public void setUp() {
-        mockGenres = List.of("Fantasy", "Science Fiction", "Mystery");
-        when(genreService.getAllGenreNames()).thenReturn(mockGenres);
+        mockGenres = List.of(new Genre(1, "Fantasy"), new Genre(2, "Science Fiction"), new Genre(3, "Mystery"));
+        when(genreService.searchGenres("", 5)).thenReturn(mockGenres);
     }
 
 
     @Test
     public void testGetAllGenres() throws Exception {
-        mockMvc.perform(get("/genres"))
+        mockMvc.perform(get("/genres?q="))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(mockGenres.size()))
-                .andExpect(jsonPath("$[0]").value("Fantasy"))
-                .andExpect(jsonPath("$[1]").value("Science Fiction"))
-                .andExpect(jsonPath("$[2]").value("Mystery"));
+                .andExpect(jsonPath("$.data.length()").value(mockGenres.size()))
+                .andExpect(jsonPath("$.data[0].genreName").value("Fantasy"))
+                .andExpect(jsonPath("$.data[1].genreName").value("Science Fiction"))
+                .andExpect(jsonPath("$.data[2].genreName").value("Mystery"));
     }
 }
