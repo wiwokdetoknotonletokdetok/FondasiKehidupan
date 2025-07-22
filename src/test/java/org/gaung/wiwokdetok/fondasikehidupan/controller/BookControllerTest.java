@@ -888,7 +888,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void advancedSearch_shouldReturnEmpty_whenNoMatch() throws Exception {
+    void testAdvancedSearch_givenTitleOnly_shouldReturnMatchingBooks() throws Exception {
         mockMvc.perform(get("/books")
                         .param("title", "Tidak Ada Judul")
                         .accept(MediaType.APPLICATION_JSON))
@@ -898,9 +898,9 @@ public class BookControllerTest {
     }
 
     @Test
-    void testAdvancedSearch_success_withEmptyParams_shouldIgnore() throws Exception {
+    void testAdvancedSearch_givenIsbnOnly_shouldReturnMatchingBooks() throws Exception{
         mockMvc.perform(get("/books")
-                        .param("title", "")
+                        .param("title", "Tidak Ada Judul")
                         .param("isbn", "")
                         .param("author", "")
                         .param("genre", "")
@@ -912,4 +912,15 @@ public class BookControllerTest {
         );
     }
 
+    @Test
+    void testAdvancedSearch_success_withEmptyParams_shouldIgnore() throws Exception {
+        mockMvc.perform(get("/books")
+                .param("title", "")
+                .param("isbn", "978-3-16-148410-1")
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.data").isArray()
+        ).andExpect(jsonPath("$.errors").doesNotExist()
+        );
+    }
 }

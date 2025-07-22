@@ -20,13 +20,7 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
         SELECT 
             b.id AS bookId,
             b.title AS title,
-            b.isbn AS isbn,
-            b.total_ratings AS rating,
-            b.total_reviews AS totalReviews,
-            b.book_picture AS bookPicture,
-            p.name AS publisherName,
-            a.name AS authorName,
-            g.genre AS genreName
+            b.book_picture AS bookPicture
         FROM book b
         JOIN publisher p ON p.id = b.id_publisher
         JOIN authored_by ab ON ab.id_book = b.id
