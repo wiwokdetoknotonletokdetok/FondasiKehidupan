@@ -86,19 +86,13 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String isbn,
-            @RequestParam(required = false) String author,
-            @RequestParam(required = false) String genre,
-            @RequestParam(required = false) String publisher) {
+            @RequestParam() String k,
+            @RequestParam(required = false) Integer limit) {
 
-        if ("".equals(title)) title = null;
-        if ("".equals(isbn)) isbn = null;
-        if ("".equals(author)) author = null;
-        if ("".equals(genre)) genre = null;
-        if ("".equals(publisher)) publisher = null;
+        int effectiveLimit = (limit == null || limit <= 0) ? 5 : limit;
+
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
-                .data(bookService.advancedSearch(title, isbn, author, genre, publisher))
+                .data(bookService.advancedSearch(k, effectiveLimit))
                 .build());
     }
 }

@@ -14,7 +14,7 @@ public interface BookService {
 
     BookResponseDTO getBookById(UUID bookId, UUID userId);
 
-    List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher);
+    List<BookSummaryDTO> advancedSearch(String keyword, int limit);
 
     void updateBook(UUID bookId, UpdateBookRequest request);
 }
