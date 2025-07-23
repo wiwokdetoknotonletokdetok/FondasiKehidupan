@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface BookService {
 
-    void createBook(BookRequestDTO dto, UUID userId);
+    String createBook(BookRequestDTO dto, UUID userId);
 
     BookResponseDTO getBookById(UUID bookId, UUID userId);
 
