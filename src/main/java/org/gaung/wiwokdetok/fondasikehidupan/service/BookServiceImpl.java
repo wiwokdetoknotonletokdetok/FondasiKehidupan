@@ -24,6 +24,9 @@ import org.gaung.wiwokdetok.fondasikehidupan.repository.BookLanguageRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.BookRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.GenreRepository;
 import org.gaung.wiwokdetok.fondasikehidupan.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,9 +58,12 @@ public class BookServiceImpl implements BookService {
 
     private final UserActivityPublisher userActivityPublisher;
 
+    @Value("${application.base-url}")
+    private String applicationBaseUrl;
+
     @Override
     @Transactional
-    public void createBook(BookRequestDTO dto, UUID userId) {
+    public String createBook(BookRequestDTO dto, UUID userId) {
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Buku dengan ISBN tersebut sudah ada");
         }
@@ -96,6 +102,8 @@ public class BookServiceImpl implements BookService {
         pointsMessage.setUserId(userId);
         pointsMessage.setPoints(3);
         userPointsPublisher.sendUserPointsForBook(pointsMessage);
+
+        return String.format("%s/books/%s", applicationBaseUrl, book.getId());
     }
 
     private AmqpBookMessage createBookMessage(Book book) {
@@ -129,8 +137,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookSummaryDTO> advancedSearch(String title, String isbn, String author, String genre, String publisher) {
-        List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(title, isbn, author, genre, publisher);
+    public List<BookSummaryDTO> advancedSearch(String keyword, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<BookAuthorGenreProjection> rows = bookRepository.advancedSearch(keyword, pageable);
         return  bookSummaryDTOMapper.groupFromProjections(rows);
     }
 

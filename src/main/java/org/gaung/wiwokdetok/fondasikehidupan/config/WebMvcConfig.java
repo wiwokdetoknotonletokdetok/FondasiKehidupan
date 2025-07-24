@@ -18,6 +18,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${cors.allowed-headers}")
     private String[] allowedHeaders;
 
+    @Value("${cors.exposed-headers}")
+    private String[] exposedHeaders;
+
     private final CurrentUserResolver currentUserResolver;
 
     public WebMvcConfig(CurrentUserResolver currentUserResolver) {
@@ -34,6 +37,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PATCH", "DELETE")
-                .allowedHeaders(allowedHeaders);
+                .allowedHeaders(allowedHeaders)
+                .exposedHeaders(exposedHeaders);
     }
 }

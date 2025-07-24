@@ -890,7 +890,7 @@ public class BookControllerTest {
     @Test
     void testAdvancedSearch_givenTitleOnly_shouldReturnMatchingBooks() throws Exception {
         mockMvc.perform(get("/books")
-                        .param("title", "Tidak Ada Judul")
+                        .param("k", "Tidak Ada Judul")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
@@ -900,11 +900,7 @@ public class BookControllerTest {
     @Test
     void testAdvancedSearch_givenIsbnOnly_shouldReturnMatchingBooks() throws Exception{
         mockMvc.perform(get("/books")
-                        .param("title", "Tidak Ada Judul")
-                        .param("isbn", "")
-                        .param("author", "")
-                        .param("genre", "")
-                        .param("publisher", "")
+                        .param("k", "Tidak Ada Judul")
                         .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()
         ).andExpect(jsonPath("$.data").isArray()
@@ -915,8 +911,7 @@ public class BookControllerTest {
     @Test
     void testAdvancedSearch_success_withEmptyParams_shouldIgnore() throws Exception {
         mockMvc.perform(get("/books")
-                .param("title", "")
-                .param("isbn", "978-3-16-148410-1")
+                .param("k", "978-3-16-148410-1")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk()
         ).andExpect(jsonPath("$.data").isArray()

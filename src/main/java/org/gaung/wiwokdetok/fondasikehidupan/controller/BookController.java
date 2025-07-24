@@ -11,7 +11,6 @@ import org.gaung.wiwokdetok.fondasikehidupan.dto.WebResponse;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.AllowedRoles;
 import org.gaung.wiwokdetok.fondasikehidupan.security.annotation.CurrentUser;
 import org.gaung.wiwokdetok.fondasikehidupan.service.BookService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,12 +41,12 @@ public class BookController {
             @Valid @RequestBody BookRequestDTO dto,
             @Valid @CurrentUser UserPrincipal user) {
 
-        bookService.createBook(dto, user.getId());
+        String bookUrl = bookService.createBook(dto, user.getId());
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .created(URI.create(bookUrl))
                 .body(WebResponse.<String>builder()
-                        .data("OK")
+                        .data("Created")
                         .build());
     }
 
@@ -86,19 +86,13 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<WebResponse<List<BookSummaryDTO>>> advancedSearch(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String isbn,
-            @RequestParam(required = false) String author,
-            @RequestParam(required = false) String genre,
-            @RequestParam(required = false) String publisher) {
+            @RequestParam() String k,
+            @RequestParam(required = false) Integer limit) {
 
-        if ("".equals(title)) title = null;
-        if ("".equals(isbn)) isbn = null;
-        if ("".equals(author)) author = null;
-        if ("".equals(genre)) genre = null;
-        if ("".equals(publisher)) publisher = null;
+        int effectiveLimit = (limit == null || limit <= 0) ? 5 : limit;
+
         return ResponseEntity.ok(WebResponse.<List<BookSummaryDTO>>builder()
-                .data(bookService.advancedSearch(title, isbn, author, genre, publisher))
+                .data(bookService.advancedSearch(k, effectiveLimit))
                 .build());
     }
 }
