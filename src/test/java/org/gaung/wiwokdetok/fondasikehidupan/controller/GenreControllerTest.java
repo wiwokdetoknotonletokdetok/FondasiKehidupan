@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,4 +47,29 @@ public class GenreControllerTest {
                 .andExpect(jsonPath("$.data[1].genreName").value("Science Fiction"))
                 .andExpect(jsonPath("$.data[2].genreName").value("Mystery"));
     }
+
+    @Test
+    void testGetGenres_withKeywordAndLimit_shouldReturnFilteredGenres() throws Exception {
+        mockMvc.perform(get("/genres")
+                        .param("q", "pop")
+                        .param("limit", "3")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(lessThanOrEqualTo(3)))
+                .andExpect(jsonPath("$.errors").doesNotExist());
+    }
+
+    @Test
+    void testGetGenres_withZeroLimit_shouldFallbackToDefaultLimit() throws Exception {
+        mockMvc.perform(get("/genres")
+                        .param("limit", "0")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(lessThanOrEqualTo(5)));
+    }
+
 }

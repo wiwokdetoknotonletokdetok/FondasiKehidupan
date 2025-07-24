@@ -79,6 +79,7 @@ public class AtLeastOneFieldNotNullValidatorTest {
     @Test
     void testFieldWithNoGetter_ShouldSkipAndReturnFalse() {
         class NoGetterField {
+            @SuppressWarnings("unused")
             private String fieldWithoutGetter;
 
             public NoGetterField(String fieldWithoutGetter) {
